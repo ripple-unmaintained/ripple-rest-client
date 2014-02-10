@@ -33,6 +33,6 @@ Sending a Paymet:
 Listening for Payments:
 
     client.monitor.on('payment:incoming', function(payment){
-      console.log('an incoming payment');
+      console.log('an incoming payment', payment);
     });
 
