@@ -18,7 +18,7 @@ The Ripple REST Api Server software simplifies interaction with the Ripple payme
 
 There are two primary payemnt functions, sending payments and listening to incoming payments.
 
-Sending a Paymet:
+Sending a Payment:
 
     client.sendPayment({
       recipient: 'rfZqa3caUggfV2p1K19HHMnQbJcAposMNc',
