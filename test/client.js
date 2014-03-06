@@ -60,8 +60,14 @@ describe('Ripple REST Client', function(){
   });
 
   describe('retrieving a payment', function(){
-    it.skip('should GET /payments with a transaction hash', function(){
-      // GET api/v1/addresses/:address/payments/:transaction_hash
+    it('should GET /payments with a transaction hash', function(){
+      request.post = sinon.spy();
+      var url = 'api/v1/addresses/'+gateway+'/payments/sometr@ns@ct10nha$h';
+      var payment = {
+        transactionHash: 'sometr@ns@ct10nha$h'   
+      };
+      client.getPayment(payment, function(err, payment){})
+      assert(request.get.calledWith(client.api + url));
     });
 
   });
