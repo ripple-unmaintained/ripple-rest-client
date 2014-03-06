@@ -1,5 +1,7 @@
 var Client = require('../lib/client');
 var assert = require('assert');
+var sinon = require('sinon');
+var request = require('request');
 
 var recipient = 'rp4u5gEskM8DtBZvonZwbu6dspgVdeAGM6';
 var gateway = 'rJMNfiJTwXHcMdB4SpxMgL3mvV4xUVHDnd'
@@ -13,7 +15,26 @@ describe('Ripple REST Client', function(){
     });
   });
 
-  it('should send a payment', function(fn){
+  describe('building a payment', function(){
+    it('should GET /payments', function(fn) {
+      request.get = sinon.spy();
+      var url = 'api/v1/addresses/'+gateway+'/payments/'+recipient+'/1+XRP';
+
+      client.buildPayment({
+        amount: 1,
+        currency: 'XRP',
+        recipient: recipient 
+      }, function(err, payment){});
+      assert(request.get.calledWith(client.api + url));
+      fn();
+    });  
+  });
+
+  describe('polling for payments', function(){
+
+  });
+
+  it.skip('should send a payment', function(fn){
     client.send_payment({
       recipient: recipient,
       amount: '0.01',
@@ -28,7 +49,7 @@ describe('Ripple REST Client', function(){
     });
   });
 
-  it("should get the next notification without a transaction hash", function(fn){
+  it.skip("should get the next notification without a transaction hash", function(fn){
     client.get_next_notification(function(err, notification){
       assert(!err);
       assert(notification);
@@ -36,7 +57,7 @@ describe('Ripple REST Client', function(){
     });
   });
 
-  it("should get the next notification with a transaction hash", function(fn){
+  it.skip("should get the next notification with a transaction hash", function(fn){
     opts = { previous_transaction_hash: 'hash' }
     client.get_next_notification(opts, function(err, notification){
       assert(!err);
@@ -45,7 +66,7 @@ describe('Ripple REST Client', function(){
     });
   });
 
-  it('should get a new payment', function(fn){
+  it.skip('should get a new payment', function(fn){
     opts = { 
       amount: '10/XAG/issuer',
       address: 'rippleAddress'
@@ -57,7 +78,7 @@ describe('Ripple REST Client', function(){
     });
   });
 
-  it('should get a single persisted payment', function(fn){
+  it.skip('should get a single persisted payment', function(fn){
     opts = { transaction_hash: 'transactionHash' };
     client.get_payment(opts, function(err, payment){
       assert(!err);    
@@ -66,7 +87,7 @@ describe('Ripple REST Client', function(){
     });
   });
 
-  it('should get the server status info', function(fn){
+  it.skip('should get the server status info', function(fn){
     client.get_server_status(function(err, status){
       assert(!err);
       assert(status);
@@ -74,7 +95,7 @@ describe('Ripple REST Client', function(){
     });
   });
 
-  it('should get a standard ripple transaction', function(fn){
+  it.skip('should get a standard ripple transaction', function(fn){
     opts = { transaction_hash: 'hash' };
     client.get_transaction(opts, function(err, transaction){
       assert(!err);
