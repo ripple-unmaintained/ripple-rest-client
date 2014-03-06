@@ -74,7 +74,7 @@ describe('Ripple REST Client', function(){
 
   describe('retrieving a raw transaction', function(){
     it('should GET /txs with a transaction hash', function(){
-      request.post = sinon.spy();
+      request.get = sinon.spy();
       var url = 'api/v1/addresses/'+gateway+'/txs/sometr@ns@ct10nha$h';
       var payment = {
         transactionHash: 'sometr@ns@ct10nha$h'   
@@ -85,8 +85,11 @@ describe('Ripple REST Client', function(){
   });
 
   describe('checking the server information', function(){
-    it.skip('should GET /status', function(){
-      // GET /api/v1/status
+    it('should GET /status', function(){
+      request.get = sinon.spy();
+      client.getServerStatus(function(err, payment){})
+      var url = 'api/v1/status';
+      assert(request.get.calledWith(client.api + url));
     });
   });
 
