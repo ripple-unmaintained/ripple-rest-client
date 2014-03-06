@@ -16,7 +16,7 @@ describe('Ripple REST Client', function(){
   });
 
   describe('building a payment', function(){
-    it('should GET /payments', function(fn) {
+    it('should GET /payments', function() {
       request.get = sinon.spy();
       var url = 'api/v1/addresses/'+gateway+'/payments/'+recipient+'/1+XRP';
 
@@ -26,8 +26,17 @@ describe('Ripple REST Client', function(){
         recipient: recipient 
       }, function(err, payment){});
       assert(request.get.calledWith(client.api + url));
-      fn();
     });  
+  });
+
+  describe('sending a payment', function(){
+    it('should POST to /payments', function(){
+      request.post = sinon.spy();
+      var url = 'api/v1/addresses/'+gateway+'/payments';
+      var payment = {};
+      client.sendPayment(payment, function(err, payment){})
+      assert(request.post.calledWith(client.api + url));
+    });
   });
 
   describe('polling for payments', function(){
