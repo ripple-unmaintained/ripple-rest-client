@@ -50,11 +50,14 @@ describe('Ripple REST Client', function(){
   });
 
   describe('retrieving a payment', function(){
-    it.skip('should get a transaction by hash', function(){
+    it.skip('should GET /payments with a transaction hash', function(){
       // GET api/v1/addresses/:address/payments/:transaction_hash
     });
 
-    it.skip('should get a raw, standard ripple transaction', function(){
+  });
+
+  describe('retrieving a raw transaction', function(){
+    it.skip('should GET /txs with a transaction hash', function(){
       // GET api/v1/addresses/:address/txs/:transaction_hash
     });
   });
