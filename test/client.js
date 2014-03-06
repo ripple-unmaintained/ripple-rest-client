@@ -40,8 +40,12 @@ describe('Ripple REST Client', function(){
   });
 
   describe('polling for payments', function(){
-    it.skip('should GET /next_notification', function(){
-      // GET api/v1/addresses/:address/next_notification
+    it('should GET /next_notification', function(){
+      request.get = sinon.spy();
+      var url = 'api/v1/addresses/'+gateway+'/next_notification';
+      var payment = {};
+      client.getNextNotification(function(err, notification){});
+      assert(request.get.calledWith(client.api + url));
     });
 
     it.skip('should GET /next_notification with previous transaction hash', function(){
