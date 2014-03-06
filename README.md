@@ -32,9 +32,3 @@ Sending a Payment:
       console.log(response);
     });
 
-Listening for Payments:
-
-    client.monitor.on('payment:incoming', function(payment){
-      console.log('an incoming payment', payment);
-    });
-
