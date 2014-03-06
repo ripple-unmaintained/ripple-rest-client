@@ -40,76 +40,25 @@ describe('Ripple REST Client', function(){
   });
 
   describe('polling for payments', function(){
-
+    // GET api/v1/addresses/:address/next_notification
+    // GET api/v1/addresses/:address/next_notification/:previous_transaction_hash
   });
 
-  it.skip('should send a payment', function(fn){
-    client.send_payment({
-      recipient: recipient,
-      amount: '0.01',
-      currency: 'SGZ',
-      issuer: gateway
-    }, function(err, payment){
-      console.log(err);
-      console.log(payment);
-      assert(!err);
-      assert(payment);
-      fn();
+  describe('retrieving a payment', function(){
+    it.skip('should get a transaction by hash', function(){
+      // GET api/v1/addresses/:address/payments/:transaction_hash
+    });
+
+    it.skip('should get a raw, standard ripple transaction', function(){
+      // GET api/v1/addresses/:address/txs/:transaction_hash
     });
   });
 
-  it.skip("should get the next notification without a transaction hash", function(fn){
-    client.get_next_notification(function(err, notification){
-      assert(!err);
-      assert(notification);
-      fn();
+  describe('checking the server information', function(){
+    it.skip('should GET /status', function(){
+      // GET /api/v1/status
     });
   });
 
-  it.skip("should get the next notification with a transaction hash", function(fn){
-    opts = { previous_transaction_hash: 'hash' }
-    client.get_next_notification(opts, function(err, notification){
-      assert(!err);
-      assert(notification);
-      fn();
-    });
-  });
 
-  it.skip('should get a new payment', function(fn){
-    opts = { 
-      amount: '10/XAG/issuer',
-      address: 'rippleAddress'
-    };
-    client.get_payment_options(opts, function(err, payment_options) {
-      assert(!err);    
-      assert(payment_options);
-      fn();
-    });
-  });
-
-  it.skip('should get a single persisted payment', function(fn){
-    opts = { transaction_hash: 'transactionHash' };
-    client.get_payment(opts, function(err, payment){
-      assert(!err);    
-      assert(payment_options);
-      fn();
-    });
-  });
-
-  it.skip('should get the server status info', function(fn){
-    client.get_server_status(function(err, status){
-      assert(!err);
-      assert(status);
-      fn();
-    });
-  });
-
-  it.skip('should get a standard ripple transaction', function(fn){
-    opts = { transaction_hash: 'hash' };
-    client.get_transaction(opts, function(err, transaction){
-      assert(!err);
-      assert(transaction);
-      fn();
-    });
-  });
 });
