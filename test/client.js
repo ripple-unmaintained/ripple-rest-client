@@ -48,8 +48,14 @@ describe('Ripple REST Client', function(){
       assert(request.get.calledWith(client.api + url));
     });
 
-    it.skip('should GET /next_notification with previous transaction hash', function(){
-      // GET api/v1/addresses/:address/next_notification/:previous_transaction_hash
+    it('should GET /next_notification with previous transaction hash', function(){
+      request.get = sinon.spy();
+      var url = 'api/v1/addresses/'+gateway+'/next_notification/somePrevi0u$transactioH@sh';
+      var opts = {
+        previousTransactionHash: 'somePrevi0u$transactioH@sh' 
+      };
+      client.getNextNotification(opts, function(err, notification){});
+      assert(request.get.calledWith(client.api + url));
     });
   });
 
