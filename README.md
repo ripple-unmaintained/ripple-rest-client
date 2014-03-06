@@ -1,5 +1,7 @@
 ## Ripple REST Node.js Client Library
 
+[![Build Status](https://api.travis-ci.org/stevenzeiler/ripple-rest-client.png)](https://api.travis-ci.org/stevenzeiler/ripple-rest-client)
+
 The Ripple REST Api Server software simplifies interaction with the Ripple payment network. This libraryaims to provide the most simplified service for using the REST api in node.js.
 
 ### Installation
