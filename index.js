@@ -82,7 +82,8 @@ Client.prototype.newPayment = function(opts, fn) {
 }
 
 Client.prototype.confirmPayment = function(hash, fn) {
-  function poll(hash, fn){
+  var client = this;
+  function poll(hash, callback){
     client.getPayment(hash, function(err, payment){
       if(err) {
         fn(err, null);
@@ -92,12 +93,13 @@ Client.prototype.confirmPayment = function(hash, fn) {
           fn(null, payment);
         } else {
           setTimeout(function(){
-            poll(hash, fn);
+            poll(hash, poll);
           }, 1000);
         };
       };
     });
   };
+  poll();
 };
 
 module.exports = Client;
