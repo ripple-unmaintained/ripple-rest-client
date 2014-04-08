@@ -81,14 +81,23 @@ Client.prototype.newPayment = function(opts, fn) {
   }) 
 }
 
-Client.prototype.listen = function(opts){
-  /* 
-    1. Get the original next notification
-    2. Begin checking the next notification url
-    3. If transaction hash is not lastTransactionHash, emit event
-  */
-
-  // GET /v1/addresses/rNw4ozCG514KEjPs5cDrqEcdsi31Jtfm5r/next_notification
+Client.prototype.confirmPayment = function(hash, fn) {
+  function poll(hash, fn){
+    client.getPayment(hash, function(err, payment){
+      if(err) {
+        fn(err, null);
+        return;
+      } else {
+        if(payment){
+          fn(null, payment);
+        } else {
+          setTimeout(function(){
+            poll(hash, fn);
+          }, 1000);
+        };
+      };
+    });
+  };
 };
 
 module.exports = Client;
