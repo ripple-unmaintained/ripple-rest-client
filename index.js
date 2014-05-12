@@ -14,6 +14,17 @@ Client.prototype.sendPayment = function(opts, fn){
   }) 
 };
 
+Client.prototype.getAccountBalance = function(fn){
+  var url = this.api+'v1/accounts/'+this.account+'/balances';
+
+  request.get({url: url, json: true}, function(err, resp, body){
+    if(err){
+      fn(err, null);
+    } else {
+      fn(null, body);
+    }
+  });
+};
 
 Client.prototype.buildPayment = function(opts, fn){
   var amount = opts.amount + "+" + opts.currency;
