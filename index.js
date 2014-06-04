@@ -7,6 +7,13 @@ var Client = function(opts) {
   this.lastPaymentHash = opts.lastPaymentHash
 }
 
+Client.prototype.ping = function(fn){
+  var url = this.api;
+  request.get({ url: url, json: true }, function(err, resp, body){
+    fn(err, body);
+  });
+};
+
 Client.prototype.sendPayment = function(opts, fn){
   var url = this.api+'v1/accounts/'+this.account+'/payments';
   request.post(url, {form: opts, json: true }, function(err, resp, body) {
