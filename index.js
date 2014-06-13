@@ -97,7 +97,14 @@ Client.prototype.newPayment = function(opts, fn) {
   request.get(url, {form: opts, json: true }, function(err, resp, body) {
     fn(err, body);
   }) 
-}
+};
+
+Client.prototype.updateAccountSettings = function(opts, fn) {
+  var url = this.api + 'v1/accounts/'+opts.account+'/settings';
+  request.post(url, {form: opts.data, json: true}, function(err, resp, body){
+    fn(err, body);
+  });
+};
 
 Client.prototype.confirmPayment = function(hash, fn) {
   var client = this;
