@@ -11,7 +11,7 @@ describe('Ripple REST Client', function(){
     client = new Client({
       api: 'http://localhost:5990/',
       account: gateway,
-      secret: 'snQ9dAZHB3rvqcgRqjbyWHJDeVJbA'
+      secret: '<secret>'
     });
   });
 
