@@ -16,6 +16,7 @@ Client.prototype.ping = function(fn){
 
 Client.prototype.sendPayment = function(opts, fn){
   var url = this.api+'v1/accounts/'+this.account+'/payments';
+
   request.post(url, {form: opts, json: true }, function(err, resp, body) {
     fn(err, body);
   }) 
@@ -88,20 +89,28 @@ Client.prototype.getServerStatus = function(opts, fn){
   var url = this.api+'v1/status';
   request.get(url, {form: opts, json: true }, function(err, resp, body) {
     fn(err, body);
-  }) 
+  });
 };
 
 Client.prototype.newPayment = function(opts, fn) {
   var amount = opts.amount.toString() + opts.currency + opts.issuer;
-  var url = this.api+'v1/accounts/'+this.account+'/payments/paths/'+opts.destination_account+'/'+amount
+  var url = this.api+'v1/accounts/'+this.account+'/payments/paths/'+opts.destination_account+'/'+amount;
   request.get(url, {form: opts, json: true }, function(err, resp, body) {
     fn(err, body);
   }) 
 };
 
 Client.prototype.updateAccountSettings = function(opts, fn) {
-  var url = this.api + 'v1/accounts/'+opts.account+'/settings';
-  request.post(url, {form: opts.data, json: true}, function(err, resp, body){
+  
+  var account = opts.account || this.account;
+  opts.data.secret = opts.data.secret || this.secret;
+
+  var options = {
+    url: this.api + 'v1/accounts/'+account+'/settings',
+    json: opts.data
+  };
+
+  request.post(options, function(err, resp, body){
     fn(err, body);
   });
 };
