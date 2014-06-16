@@ -1,4 +1,4 @@
-var Client = require('../lib/client');
+var Client = require('../');
 var assert = require('assert');
 var sinon = require('sinon');
 var request = require('request');
@@ -9,7 +9,7 @@ var gateway = 'rJMNfiJTwXHcMdB4SpxMgL3mvV4xUVHDnd'
 describe('Ripple REST Client', function(){
   before(function(){
     client = new Client({
-      api: 'https://ripple-rest.herokuapp.com/',
+      api: 'http://localhost:5990/',
       account: gateway,
       secret: 'snQ9dAZHB3rvqcgRqjbyWHJDeVJbA'
     });
@@ -18,7 +18,7 @@ describe('Ripple REST Client', function(){
   describe('building a payment', function(){
     it('should GET /payments', function() {
       request.get = sinon.spy();
-      var url = 'api/v1/addresses/'+gateway+'/payments/'+recipient+'/1+XRP';
+      var url = 'v1/addresses/'+gateway+'/payments/'+recipient+'/1+XRP';
 
       client.buildPayment({
         amount: 1,
@@ -32,7 +32,7 @@ describe('Ripple REST Client', function(){
   describe('sending a payment', function(){
     it('should POST to /payments', function(){
       request.post = sinon.spy();
-      var url = 'api/v1/addresses/'+gateway+'/payments';
+      var url = 'v1/addresses/'+gateway+'/payments';
       var payment = {};
       client.sendPayment(payment, function(err, payment){})
       assert(request.post.calledWith(client.api + url));
@@ -42,7 +42,7 @@ describe('Ripple REST Client', function(){
   describe('polling for payments', function(){
     it('should GET /next_notification', function(){
       request.get = sinon.spy();
-      var url = 'api/v1/addresses/'+gateway+'/next_notification';
+      var url = 'v1/addresses/'+gateway+'/next_notification';
       var payment = {};
       client.getNextNotification(function(err, notification){});
       assert(request.get.calledWith(client.api + url));
@@ -50,7 +50,7 @@ describe('Ripple REST Client', function(){
 
     it('should GET /next_notification with previous transaction hash', function(){
       request.get = sinon.spy();
-      var url = 'api/v1/addresses/'+gateway+'/next_notification/somePrevi0u$transactioH@sh';
+      var url = 'v1/addresses/'+gateway+'/next_notification/somePrevi0u$transactioH@sh';
       var opts = {
         previousTransactionHash: 'somePrevi0u$transactioH@sh' 
       };
@@ -62,7 +62,7 @@ describe('Ripple REST Client', function(){
   describe('retrieving a payment', function(){
     it('should GET /payments with a transaction hash', function(){
       request.post = sinon.spy();
-      var url = 'api/v1/addresses/'+gateway+'/payments/sometr@ns@ct10nha$h';
+      var url = 'v1/addresses/'+gateway+'/payments/sometr@ns@ct10nha$h';
       var payment = {
         transactionHash: 'sometr@ns@ct10nha$h'   
       };
@@ -75,7 +75,7 @@ describe('Ripple REST Client', function(){
   describe('retrieving a raw transaction', function(){
     it('should GET /txs with a transaction hash', function(){
       request.get = sinon.spy();
-      var url = 'api/v1/addresses/'+gateway+'/txs/sometr@ns@ct10nha$h';
+      var url = 'v1/addresses/'+gateway+'/txs/sometr@ns@ct10nha$h';
       var payment = {
         transactionHash: 'sometr@ns@ct10nha$h'   
       };
@@ -88,10 +88,9 @@ describe('Ripple REST Client', function(){
     it('should GET /status', function(){
       request.get = sinon.spy();
       client.getServerStatus(function(err, payment){})
-      var url = 'api/v1/status';
+      var url = 'v1/status';
       assert(request.get.calledWith(client.api + url));
     });
   });
-
 
 });
