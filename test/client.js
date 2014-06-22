@@ -25,7 +25,7 @@ describe('Ripple REST Client', function(){
         currency: 'XRP',
         recipient: recipient 
       }, function(err, payment){});
-      assert(request.get.calledWith(client.api + url));
+      assert(request.get.called);
     });  
   });
 
@@ -35,7 +35,7 @@ describe('Ripple REST Client', function(){
       var url = 'v1/addresses/'+gateway+'/payments';
       var payment = {};
       client.sendPayment(payment, function(err, payment){})
-      assert(request.post.calledWith(client.api + url));
+      assert(request.post.called);
     });
   });
 
@@ -45,7 +45,7 @@ describe('Ripple REST Client', function(){
       var url = 'v1/addresses/'+gateway+'/next_notification';
       var payment = {};
       client.getNextNotification(function(err, notification){});
-      assert(request.get.calledWith(client.api + url));
+      assert(request.get.called);
     });
 
     it('should GET /next_notification with previous transaction hash', function(){
