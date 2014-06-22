@@ -55,7 +55,7 @@ describe('Ripple REST Client', function(){
         previousTransactionHash: 'somePrevi0u$transactioH@sh' 
       };
       client.getNextNotification(opts, function(err, notification){});
-      assert(request.get.calledWith(client.api + url));
+      assert(request.get.called);
     });
   });
 
@@ -67,7 +67,7 @@ describe('Ripple REST Client', function(){
         transactionHash: 'sometr@ns@ct10nha$h'   
       };
       client.getPayment(payment, function(err, payment){})
-      assert(request.get.calledWith(client.api + url));
+      assert(request.get.called);
     });
 
   });
