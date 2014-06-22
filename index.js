@@ -63,6 +63,20 @@ Client.prototype.getNotification = function(hash, fn){
   });  
 };
 
+Client.prototype.getNextNotification = function(hash, fn) {
+  var self = this;
+  self.getNotification(hash, function(error, notification) {
+    if (error) {
+      return fn(error, null);
+    }
+    if (notification.next_notification_hash) {
+      self.getNotification(hash, fn);
+    } else {
+      fn(null, null);  
+    }
+  });
+}
+
 Client.prototype.setHash = function(paymentHash, fn) {
   this.lastPaymentHash = paymentHash; 
 }
