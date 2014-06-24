@@ -161,7 +161,7 @@ Client.prototype.getPaymentStatus = function(statusUrl, callback){
   });
 };
 
-Client.prototype.getAndHandlePaymentStatus = function(statusUrl, callback, loopFunction){
+Client.prototype._getAndHandlePaymentStatus = function(statusUrl, callback, loopFunction){
   var self = this;
 
   self.getPaymentStatus(statusUrl, function(error, response){
@@ -182,7 +182,7 @@ Client.prototype.getAndHandlePaymentStatus = function(statusUrl, callback, loopF
 
 Client.prototype.pollPaymentStatus = function(paymentUrl, callback){
   var self = this;
-  self.getAndHandlePaymentStatus(paymentUrl, callback, self.getAndHandlePaymentStatus.bind(this));
+  self._getAndHandlePaymentStatus(paymentUrl, callback, self._getAndHandlePaymentStatus.bind(this));
 };
 
 module.exports = Client;
