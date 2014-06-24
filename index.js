@@ -9,25 +9,25 @@ var Client = function(opts) {
 
 Client.prototype.ping = function(fn){
   var url = this.api;
-  request.get({ url: url, json: true }, function(err, resp, body){
-    fn(err, body);
+  request.get({ url: url, json: true }, function(error, resp, body){
+    fn(error, body);
   });
 };
 
 Client.prototype.sendPayment = function(opts, fn){
   var url = this.api+'v1/accounts/'+this.account+'/payments';
 
-  request.post(url, {form: opts, json: true }, function(err, resp, body) {
-    fn(err, body);
+  request.post(url, {form: opts, json: true }, function(error, resp, body) {
+    fn(error, body);
   }) 
 };
 
 Client.prototype.getAccountBalance = function(fn){
   var url = this.api+'v1/accounts/'+this.account+'/balances';
 
-  request.get({url: url, json: true}, function(err, resp, body){
+  request.get({url: url, json: true}, function(error, resp, body){
     if(err){
-      fn(err, null);
+      fn(error, null);
     } else {
       fn(null, body);
     }
@@ -40,16 +40,16 @@ Client.prototype.buildPayment = function(opts, fn){
     amount += ("+"+ opts.issuer);
   }
   var url = this.api+'v1/accounts/'+this.account+'/payments/paths/'+opts.recipient+'/'+amount; 
-  request.get({ url: url, json: true }, function(err, resp, body){
-    fn(err, body);
+  request.get({ url: url, json: true }, function(error, resp, body){
+    fn(error, body);
   });  
 };
 
 Client.prototype.getNotification = function(hash, fn){
   var url = this.api+'v1/accounts/'+this.account+'/notifications/'+hash+"?types=payment";
-  request.get(url, { json: true },function(err, resp, body){
+  request.get(url, { json: true },function(error, resp, body){
     if (err) {
-      fn(err, null);
+      fn(error, null);
     } else {
       var notification = body.notification;
       if (notification && notification.next_notification_url) {
@@ -83,9 +83,9 @@ Client.prototype.setHash = function(paymentHash, fn) {
 
 Client.prototype.getPayment = function(hash, fn){
   var url = this.api+'v1/accounts/'+this.account+'/payments/'+hash;
-  request.get(url, { json: true }, function(err, resp, body) {
+  request.get(url, { json: true }, function(error, resp, body) {
     if (err) {
-      fn(err, null);
+      fn(error, null);
     } else {
       fn(null, body.payment);
     }
@@ -94,23 +94,23 @@ Client.prototype.getPayment = function(hash, fn){
 
 Client.prototype.getTransaction = function(opts, fn){
   var url = this.api+'v1/addresses/'+this.account+'/txs/'+opts.transactionHash;
-  request.get(url, {form: opts, json: true }, function(err, resp, body) {
-    fn(err, body);
+  request.get(url, {form: opts, json: true }, function(error, resp, body) {
+    fn(error, body);
   }) 
 };
 
 Client.prototype.getServerStatus = function(opts, fn){
   var url = this.api+'v1/status';
-  request.get(url, {form: opts, json: true }, function(err, resp, body) {
-    fn(err, body);
+  request.get(url, {form: opts, json: true }, function(error, resp, body) {
+    fn(error, body);
   });
 };
 
 Client.prototype.newPayment = function(opts, fn) {
   var amount = opts.amount.toString() + opts.currency + opts.issuer;
   var url = this.api+'v1/accounts/'+this.account+'/payments/paths/'+opts.destination_account+'/'+amount;
-  request.get(url, {form: opts, json: true }, function(err, resp, body) {
-    fn(err, body);
+  request.get(url, {form: opts, json: true }, function(error, resp, body) {
+    fn(error, body);
   }) 
 };
 
@@ -124,17 +124,17 @@ Client.prototype.updateAccountSettings = function(opts, fn) {
     json: opts.data
   };
 
-  request.post(options, function(err, resp, body){
-    fn(err, body);
+  request.post(options, function(error, resp, body){
+    fn(error, body);
   });
 };
 
 Client.prototype.confirmPayment = function(hash, fn) {
   var client = this;
   function poll(hash, callback){
-    client.getPayment(hash, function(err, payment){
+    client.getPayment(hash, function(error, payment){
       if(err) {
-        fn(err, null);
+        fn(error, null);
         return;
       } else {
         if(payment){
@@ -148,6 +148,41 @@ Client.prototype.confirmPayment = function(hash, fn) {
     });
   };
   poll();
+};
+
+Client.prototype.getPaymentStatus = function(statusUrl, callback){
+  request.get({url: statusUrl, json: true}, function(error, resp, body){
+    if (error) {
+      callback(error, null);
+    } else {
+      callback(null, body.payment);
+    }
+
+  });
+};
+
+Client.prototype.getAndHandlePaymentStatus = function(statusUrl, callback, loopFunction){
+  var self = this;
+
+  self.getPaymentStatus(statusUrl, function(error, response){
+
+    if(error){
+      callback(error, null);
+      return loopFunction(statusUrl, callback, loopFunction);
+    }
+
+    if (response.state === 'validated'){
+      callback(null, response);
+    } else {
+      loopFunction(statusUrl, callback, loopFunction);
+    }
+
+  });
+};
+
+Client.prototype.pollPaymentStatus = function(paymentUrl, callback){
+  var self = this;
+  self.getAndHandlePaymentStatus(paymentUrl, callback, self.getAndHandlePaymentStatus.bind(this));
 };
 
 module.exports = Client;
