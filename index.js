@@ -1,7 +1,7 @@
 var request = require('request');
 
 var Client = function(opts) {
-  this.api = opts.api;
+  this.api = opts.api || 'http://localhost:5990/';
   this.account = opts.account;
   this.secret = opts.secret || '';
   this.lastPaymentHash = opts.lastPaymentHash
@@ -15,9 +15,13 @@ Client.prototype.ping = function(fn){
 };
 
 Client.prototype.sendPayment = function(opts, fn){
-  var url = this.api+'v1/accounts/'+this.account+'/payments';
 
-  request.post(url, {form: opts, json: true }, function(error, resp, body) {
+  var options = {
+    url: this.api+'v1/payments',
+    json: opts
+  };
+
+  request.post(options, function(error, resp, body) {
     fn(error, body);
   }) 
 };
@@ -35,14 +39,15 @@ Client.prototype.getAccountBalance = function(fn){
 };
 
 Client.prototype.buildPayment = function(opts, fn){
+
   var amount = opts.amount + "+" + opts.currency;
   if (opts.issuer) {
     amount += ("+"+ opts.issuer);
   }
-  var url = this.api+'v1/accounts/'+this.account+'/payments/paths/'+opts.recipient+'/'+amount; 
+  var url = this.api+'v1/accounts/'+this.account+'/payments/paths/'+opts.recipient+'/'+amount;
   request.get({ url: url, json: true }, function(error, resp, body){
     fn(error, body);
-  });  
+  });
 };
 
 Client.prototype.getNotification = function(hash, fn){
