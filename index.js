@@ -190,4 +190,15 @@ Client.prototype.pollPaymentStatus = function(paymentUrl, callback){
   self._getAndHandlePaymentStatus(paymentUrl, callback, self._getAndHandlePaymentStatus.bind(this));
 };
 
+Client.prototype.getTrustLines = function(account, callback){
+  var options = {
+    url: this.api + 'v1/accounts/'+account+'/trustlines',
+    json: true
+  };
+
+  request.get(options, function(error, resp, body){
+    callback(error, body.trustlines);
+  });
+};
+
 module.exports = Client;
