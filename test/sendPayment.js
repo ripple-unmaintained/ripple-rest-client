@@ -4,6 +4,8 @@ var request = require('request');
 var sinon = require('sinon');
 var uuid = require('node-uuid');
 
+var SECRET = process.env.RIPPLE_ACCOUNT_SECRET;
+
 describe('Ripple REST Client sendPayment', function() {
   var client, payment;
 
@@ -13,30 +15,35 @@ describe('Ripple REST Client sendPayment', function() {
     });
   });
 
-  it('should send payment', function(done){
-    payment = {
-      source_account: 'rMinhWxZz4jeHoJGyddtmwg6dWhyqQKtJz',
-      source_amount: { value: '1', currency: 'XRP', issuer: '' },
-      destination_account: 'ra9EVPRsiqncEfrRpJudDV34AqxFao8Zv9',
-      destination_amount: { value: '1', currency: 'XRP', issuer: '' },
-      partial_payment: false,
-      no_direct_ripple: false
-    };
+  if(SECRET){
+    it('should send payment', function(done){
+      payment = {
+        source_account: 'rMinhWxZz4jeHoJGyddtmwg6dWhyqQKtJz',
+        source_amount: { value: '1', currency: 'XRP', issuer: '' },
+        destination_account: 'ra9EVPRsiqncEfrRpJudDV34AqxFao8Zv9',
+        destination_amount: { value: '1', currency: 'XRP', issuer: '' },
+        partial_payment: false,
+        no_direct_ripple: false
+      };
 
-    var paymentObj = {
-      payment: payment,
-      client_resource_id: uuid.v4(),
-      secret: '<secret>'
-    };
+      var paymentObj = {
+        payment: payment,
+        client_resource_id: uuid.v4(),
+        secret: SECRET
+      };
 
-    client.sendPayment(paymentObj, function(error, response){
-      assert.strictEqual(response.success, true);
-      assert.strictEqual(response.client_resource_id, paymentObj.client_resource_id);
-      payment.status_url = response.status_url;
-      done();
+      client.sendPayment(paymentObj, function(error, response){
+        assert.strictEqual(response.success, true);
+        assert.strictEqual(response.client_resource_id, paymentObj.client_resource_id);
+        payment.status_url = response.status_url;
+        done();
+      });
+
     });
+  } else {
+    it.skip('should send payment');
+  }
 
-  });
 
   it('should payment status response must match', function(done){
     client.getPaymentStatus(payment.status_url, function(error, response){
@@ -59,7 +66,7 @@ describe('Ripple REST Client sendPayment', function() {
     var paymentObj = {
       payment: failedPayment,
       client_resource_id: uuid.v4(),
-      secret: '<secret>'
+      secret: SECRET
     };
 
     client.sendPayment(paymentObj, function(error, response){
@@ -68,5 +75,5 @@ describe('Ripple REST Client sendPayment', function() {
     });
 
   });
-  
+
 });
