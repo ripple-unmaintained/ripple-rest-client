@@ -75,7 +75,7 @@ Client.prototype.setHash = function(paymentHash, fn) {
 Client.prototype.getPayment = function(hash, fn){
   var url = this.api+'v1/accounts/'+this.account+'/payments/'+hash;
   request.get(url, { json: true }, function(error, resp, body) {
-    if (err) {
+    if (error) {
       fn(error, null);
     } else {
       fn(null, body.payment);
