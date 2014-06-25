@@ -25,8 +25,10 @@ describe('Ripple REST Client', function(){
       var payment = {
         transactionHash: 'sometr@ns@ct10nha$h'   
       };
+      var spyGetPayment = sinon.spy(client, 'getPayment');
+
       client.getPayment(payment, function(err, payment){})
-      assert(request.get.calledWith(client.api + url));
+      assert(spyGetPayment.withArgs(payment).called);
     });
 
   });
