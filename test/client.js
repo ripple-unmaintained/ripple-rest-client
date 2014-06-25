@@ -17,49 +17,6 @@ describe('Ripple REST Client', function(){
     });
   });
 
-  describe('building a payment', function(){
-    it('should GET /payments', function() {
-      request.get = sinon.spy();
-      var url = 'v1/addresses/'+gateway+'/payments/'+recipient+'/1+XRP';
-
-      client.buildPayment({
-        amount: 1,
-        currency: 'XRP',
-        recipient: recipient 
-      }, function(err, payment){});
-      assert(request.get.calledWith(client.api + url));
-    });  
-  });
-
-  describe('sending a payment', function(){
-    it('should POST to /payments', function(){
-      request.post = sinon.spy();
-      var url = 'v1/addresses/'+gateway+'/payments';
-      var payment = {};
-      client.sendPayment(payment, function(err, payment){})
-      assert(request.post.calledWith(client.api + url));
-    });
-  });
-
-  describe('polling for payments', function(){
-    it('should GET /next_notification', function(){
-      request.get = sinon.spy();
-      var url = 'v1/addresses/'+gateway+'/next_notification';
-      var payment = {};
-      client.getNextNotification(function(err, notification){});
-      assert(request.get.calledWith(client.api + url));
-    });
-
-    it('should GET /next_notification with previous transaction hash', function(){
-      request.get = sinon.spy();
-      var url = 'v1/addresses/'+gateway+'/next_notification/somePrevi0u$transactioH@sh';
-      var opts = {
-        previousTransactionHash: 'somePrevi0u$transactioH@sh' 
-      };
-      client.getNextNotification(opts, function(err, notification){});
-      assert(request.get.calledWith(client.api + url));
-    });
-  });
 
   describe('retrieving a payment', function(){
     it('should GET /payments with a transaction hash', function(){
