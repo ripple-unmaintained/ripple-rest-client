@@ -222,4 +222,36 @@ Client.prototype.getTrustLines = function(account, callback){
   });
 };
 
+Client.prototype.setTrustLines = function(options, callback){
+  var account = options.account || this.account;
+  var options = {
+    url: this.api + 'v1/accounts/'+account+'/trustlines',
+    json: {
+      secret: options.secret,
+      trustline: {
+        limit: options.limit,
+        currency: options.currency,
+        counterparty: options.counterparty
+      }
+    }
+  };
+
+  request.post(options, function(error, resp, body) {
+    callback(error, body.trustline);
+  })
+
+};
+
+Client.prototype.getTrustLines = function(account, callback){
+  var account = account || this.account;
+  var options = {
+    url: this.api + 'v1/accounts/'+account+'/trustlines',
+    json: true
+  };
+
+  request.get(options, function(error, resp, body){
+    callback(error, body.trustlines);
+  });
+};
+
 module.exports = Client;
