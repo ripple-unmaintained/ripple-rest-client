@@ -4,14 +4,16 @@ var sinon = require('sinon');
 var request = require('request');
 
 var recipient = 'rp4u5gEskM8DtBZvonZwbu6dspgVdeAGM6';
-var gateway = 'rJMNfiJTwXHcMdB4SpxMgL3mvV4xUVHDnd'
+
+var gateway = 'rMinhWxZz4jeHoJGyddtmwg6dWhyqQKtJz'
+var SECRET = process.env.RIPPLE_ACCOUNT_SECRET;
 
 describe('Ripple REST Client', function(){
   before(function(){
     client = new Client({
       api: 'http://localhost:5990/',
       account: gateway,
-      secret: '<secret>'
+      secret: SECRET
     });
   });
 
@@ -66,6 +68,8 @@ describe('Ripple REST Client', function(){
       var payment = {
         transactionHash: 'sometr@ns@ct10nha$h'   
       };
+      var spyGetPayment = sinon.spy(client, 'getPayment');
+
       client.getPayment(payment, function(err, payment){})
       assert(request.get.called);
     });
