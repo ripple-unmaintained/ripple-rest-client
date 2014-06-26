@@ -23,7 +23,7 @@ Client.prototype.sendPayment = function(opts, fn){
 
   request.post(options, function(error, resp, body) {
     fn(error, body);
-  }) 
+  });
 };
 
 Client.prototype.getAccountBalance = function(fn){
@@ -188,6 +188,70 @@ Client.prototype._getAndHandlePaymentStatus = function(statusUrl, callback, loop
 Client.prototype.pollPaymentStatus = function(paymentUrl, callback){
   var self = this;
   self._getAndHandlePaymentStatus(paymentUrl, callback, self._getAndHandlePaymentStatus.bind(this));
+};
+
+Client.prototype.setTrustLines = function(options, callback){
+  var account = options.account || this.account;
+  var options = {
+    url: this.api + 'v1/accounts/'+account+'/trustlines',
+    json: {
+      secret: options.secret,
+      trustline: {
+        limit: options.limit,
+        currency: options.currency,
+        counterparty: options.counterparty
+      }
+    }
+  };
+
+  request.post(options, function(error, resp, body) {
+    callback(error, body.trustline);
+  })
+
+};
+
+Client.prototype.getTrustLines = function(account, callback){
+  var account = account || this.account;
+  var options = {
+    url: this.api + 'v1/accounts/'+account+'/trustlines',
+    json: true
+  };
+
+  request.get(options, function(error, resp, body){
+    callback(error, body.trustlines);
+  });
+};
+
+Client.prototype.setTrustLines = function(options, callback){
+  var account = options.account || this.account;
+  var options = {
+    url: this.api + 'v1/accounts/'+account+'/trustlines',
+    json: {
+      secret: options.secret,
+      trustline: {
+        limit: options.limit,
+        currency: options.currency,
+        counterparty: options.counterparty
+      }
+    }
+  };
+
+  request.post(options, function(error, resp, body) {
+    callback(error, body.trustline);
+  })
+
+};
+
+Client.prototype.getTrustLines = function(account, callback){
+  var account = account || this.account;
+  var options = {
+    url: this.api + 'v1/accounts/'+account+'/trustlines',
+    json: true
+  };
+
+  request.get(options, function(error, resp, body){
+    callback(error, body.trustlines);
+  });
 };
 
 module.exports = Client;
