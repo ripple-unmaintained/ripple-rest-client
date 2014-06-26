@@ -22,11 +22,12 @@
     "url": "https://github.com/stevenzeiler/bitpay-node/issues"
   },
   "dependencies": {
-    "request": "2.x.x"
+    "request": "2.x.x",
+    "node-uuid": "^1.4.1"
   },
   "devDependencies": {
     "mocha": "1.16.x",
     "assert": "1.1.x",
-    "sinon": ""  
+    "sinon": ""
   }
 }
