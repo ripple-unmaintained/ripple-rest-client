@@ -53,7 +53,7 @@ Client.prototype.buildPayment = function(opts, fn){
 Client.prototype.getNotification = function(hash, fn){
   var url = this.api+'v1/accounts/'+this.account+'/notifications/'+hash+"?types=payment";
   request.get(url, { json: true },function(error, resp, body){
-    if (err) {
+    if (error) {
       fn(error, null);
     } else {
       var notification = body.notification;
