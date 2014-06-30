@@ -12,19 +12,60 @@ describe('Ripple REST Client getTrustLines', function() {
   });
 
 
-  it('should get trust lines between two given accounts', function(done){
-    var account = client.account;
+  it('should get trust lines of account', function(done){
 
-    client.getTrustLines(account, function(error, response){
+    var options = {
+      fromAccount: client.account
+    };
+
+    client.getTrustLines(options, function(error, response){
       assert.strictEqual(typeof response, 'object');
-      assert.strictEqual(account, response[0].account);
+      assert.strictEqual(options.fromAccount, response[0].account);
+      done();
+    });
+  });
+
+  it('should show trust lines between two specific accounts', function(done){
+
+    var options = {
+      fromAccount: client.account,
+      toAccount: 'rMinhWxZz4jeHoJGyddtmwg6dWhyqQKtJz'
+    };
+
+    client.getTrustLines(options, function(error, response){
+      assert.strictEqual(typeof response, 'object');
+      assert.strictEqual(options.fromAccount, response[0].account);
+      assert.strictEqual(options.toAccount, response[0].counterparty);
+      console.log(response);
+      done();
+    });
+  });
+
+  it('should show trust lines between two specific accounts and currency', function(done){
+
+    var options = {
+      fromAccount: client.account,
+      toAccount: 'rMinhWxZz4jeHoJGyddtmwg6dWhyqQKtJz',
+      currency: 'SWD'
+    };
+
+    client.getTrustLines(options, function(error, response){
+      assert.strictEqual(typeof response, 'object');
+      assert.strictEqual(options.fromAccount, response[0].account);
+      assert.strictEqual(options.toAccount, response[0].counterparty);
+      assert.strictEqual(options.currency, response[0].currency);
       done();
     });
   });
 
   it('should fail because of missing account', function(done){
-    var account = '';
-    client.getTrustLines(account, function(error, response){
+    client.account = '';
+
+    var options = {
+      fromAccount : client.account
+    };
+
+    client.getTrustLines(options, function(error, response){
       assert(!response);
       done();
     });
