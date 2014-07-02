@@ -30,7 +30,7 @@ Client.prototype.getAccountBalance = function(fn){
   var url = this.api+'v1/accounts/'+this.account+'/balances';
 
   request.get({url: url, json: true}, function(error, resp, body){
-    if(err){
+    if(error){
       fn(error, null);
     } else {
       fn(null, body);
@@ -151,7 +151,7 @@ Client.prototype.confirmPayment = function(hash, fn) {
   var client = this;
   function poll(hash, callback){
     client.getPayment(hash, function(error, payment){
-      if(err) {
+      if(error) {
         fn(error, null);
         return;
       } else {
