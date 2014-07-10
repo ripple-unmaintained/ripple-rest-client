@@ -107,17 +107,6 @@ Client.prototype.getPayment = function(hash, callback){
   })
 };
 
-Client.prototype.getPayment = function(hash, callback){
-  var url = this.api+'v1/accounts/'+this.account+'/payments/'+hash;
-  request.get(url, { json: true }, function(error, resp, body) {
-    if (error) {
-      callback(error, null);
-    } else {
-      callback(null, body.payment);
-    }
-  })
-};
-
 Client.prototype.getTransaction = function(opts, callback){
   var url = this.api+'v1/addresses/'+this.account+'/txs/'+opts.transactionHash;
   request.get(url, {form: opts, json: true }, function(error, resp, body) {
