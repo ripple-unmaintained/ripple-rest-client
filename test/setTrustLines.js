@@ -4,7 +4,7 @@ var request = require('request');
 
 var SECRET = process.env.RIPPLE_ACCOUNT_SECRET;
 
-describe('Ripple REST Client getTrustLines', function() {
+describe('Ripple REST Client setTrustLines', function() {
   var client;
 
   before(function () {
@@ -16,10 +16,11 @@ describe('Ripple REST Client getTrustLines', function() {
   if(SECRET){
     it('should set trust lines between two given accounts', function(done){
       var trust = {
+        account: 'rMinhWxZz4jeHoJGyddtmwg6dWhyqQKtJz',
         secret: SECRET,
-        limit: 1,
-        currency: 'SWG',
-        counterparty: 'rscJF4TWS2jBe43MvUomTtCcyrbtTRMSNr'
+        amount: 1,
+        currency: 'POO',
+        issuer: 'rscJF4TWS2jBe43MvUomTtCcyrbtTRMSNr'
       };
 
       client.setTrustLines(trust, function(error, response){
@@ -35,9 +36,9 @@ describe('Ripple REST Client getTrustLines', function() {
   it('should fail because of missing secret', function(done){
     var trust = {
       secret: '',
-      limit: 1,
+      amount: 1,
       currency: 'SWG',
-      counterparty: 'rscJF4TWS2jBe43MvUomTtCcyrbtTRMSNr'
+      issuer: 'rscJF4TWS2jBe43MvUomTtCcyrbtTRMSNr'
     };
 
     client.setTrustLines(trust, function(error, response){

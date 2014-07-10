@@ -203,30 +203,20 @@ Client.prototype.pollPaymentStatus = function(paymentUrl, callback){
   self._getAndHandlePaymentStatus(paymentUrl, callback, self._getAndHandlePaymentStatus.bind(this));
 };
 
-Client.prototype.setTrustLines = function(options, callback){
-  var account = options.account || this.account;
+Client.prototype.getTrustLines = function(opts, callback){
+  var account = opts.fromAccount || this.account;
+  var url = this.api + 'v1/accounts/'+account+'/trustlines';
+
+  if (opts.toAccount) {
+    url += '?toAccount=' + opts.toAccount;
+  }
+
+  if (opts.toAccount && opts.currency) {
+    url += '&currency='+opts.currency;
+  }
+
   var options = {
-    url: this.api + 'v1/accounts/'+account+'/trustlines',
-    json: {
-      secret: options.secret,
-      trustline: {
-        limit: options.limit,
-        currency: options.currency,
-        counterparty: options.counterparty
-      }
-    }
-  };
-
-  request.post(options, function(error, resp, body) {
-    callback(error, body.trustline);
-  })
-
-};
-
-Client.prototype.getTrustLines = function(account, callback){
-  var account = account || this.account;
-  var options = {
-    url: this.api + 'v1/accounts/'+account+'/trustlines',
+    url: url,
     json: true
   };
 
@@ -237,34 +227,23 @@ Client.prototype.getTrustLines = function(account, callback){
 
 Client.prototype.setTrustLines = function(options, callback){
   var account = options.account || this.account;
+  
   var options = {
     url: this.api + 'v1/accounts/'+account+'/trustlines',
     json: {
       secret: options.secret,
       trustline: {
-        limit: options.limit,
+        limit: options.amount,
         currency: options.currency,
-        counterparty: options.counterparty
+        counterparty: options.issuer
       }
     }
   };
 
   request.post(options, function(error, resp, body) {
     callback(error, body.trustline);
-  })
-
-};
-
-Client.prototype.getTrustLines = function(account, callback){
-  var account = account || this.account;
-  var options = {
-    url: this.api + 'v1/accounts/'+account+'/trustlines',
-    json: true
-  };
-
-  request.get(options, function(error, resp, body){
-    callback(error, body.trustlines);
   });
+
 };
 
 module.exports = Client;
