@@ -12,48 +12,14 @@ describe('Ripple REST Client getTrustLines', function() {
   });
 
 
-  it('should get trust lines of account', function(done){
+  it('should get trust lines of accounts', function(done){
 
     var options = {
       fromAccount: client.account
     };
 
     client.getTrustLines(options, function(error, response){
-      assert.strictEqual(typeof response, 'object');
       assert.strictEqual(options.fromAccount, response[0].account);
-      done();
-    });
-  });
-
-  it('should show trust lines between two specific accounts', function(done){
-
-    var options = {
-      fromAccount: client.account,
-      toAccount: 'rMinhWxZz4jeHoJGyddtmwg6dWhyqQKtJz'
-    };
-
-    client.getTrustLines(options, function(error, response){
-      assert.strictEqual(typeof response, 'object');
-      assert.strictEqual(options.fromAccount, response[0].account);
-      assert.strictEqual(options.toAccount, response[0].counterparty);
-      console.log(response);
-      done();
-    });
-  });
-
-  it('should show trust lines between two specific accounts and currency', function(done){
-
-    var options = {
-      fromAccount: client.account,
-      toAccount: 'rMinhWxZz4jeHoJGyddtmwg6dWhyqQKtJz',
-      currency: 'SWD'
-    };
-
-    client.getTrustLines(options, function(error, response){
-      assert.strictEqual(typeof response, 'object');
-      assert.strictEqual(options.fromAccount, response[0].account);
-      assert.strictEqual(options.toAccount, response[0].counterparty);
-      assert.strictEqual(options.currency, response[0].currency);
       done();
     });
   });
@@ -62,7 +28,7 @@ describe('Ripple REST Client getTrustLines', function() {
     client.account = '';
 
     var options = {
-      fromAccount : client.account
+      fromAccount: ''
     };
 
     client.getTrustLines(options, function(error, response){

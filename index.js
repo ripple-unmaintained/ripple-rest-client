@@ -1,20 +1,22 @@
 var request = require('request');
+var async = require('async');
 
 var Client = function(opts) {
   this.api = opts.api || 'http://localhost:5990/';
   this.account = opts.account;
   this.secret = opts.secret || '';
-  this.lastPaymentHash = opts.lastPaymentHash
+  this.lastPaymentHash = opts.lastPaymentHash;
+  this.errors = [];
 }
 
-Client.prototype.ping = function(fn){
+Client.prototype.ping = function(callback){
   var url = this.api;
   request.get({ url: url, json: true }, function(error, resp, body){
-    fn(error, body);
+    callback(error, body);
   });
 };
 
-Client.prototype.sendPayment = function(opts, fn){
+Client.prototype.sendPayment = function(opts, callback){
 
   var options = {
     url: this.api+'v1/payments',
@@ -22,23 +24,31 @@ Client.prototype.sendPayment = function(opts, fn){
   };
 
   request.post(options, function(error, resp, body) {
-    fn(error, body);
-  });
-};
+    if (error) {
+      return callback(error, null);
+    }
 
-Client.prototype.getAccountBalance = function(fn){
-  var url = this.api+'v1/accounts/'+this.account+'/balances';
-
-  request.get({url: url, json: true}, function(error, resp, body){
-    if(error){
-      fn(error, null);
+    if (body.success) {
+      callback(null, body);
     } else {
-      fn(null, body);
+      callback(body.message, null);
     }
   });
 };
 
-Client.prototype.buildPayment = function(opts, fn){
+Client.prototype.getAccountBalance = function(callback){
+  var url = this.api+'v1/accounts/'+this.account+'/balances';
+
+  request.get({url: url, json: true}, function(error, resp, body){
+    if(error){
+      callback(error, null);
+    } else {
+      callback(null, body);
+    }
+  });
+};
+
+Client.prototype.buildPayment = function(opts, callback){
 
   var amount = opts.amount + "+" + opts.currency;
   if (opts.issuer) {
@@ -46,94 +56,81 @@ Client.prototype.buildPayment = function(opts, fn){
   }
   var url = this.api+'v1/accounts/'+this.account+'/payments/paths/'+opts.recipient+'/'+amount;
   request.get({ url: url, json: true }, function(error, resp, body){
-    fn(error, body);
+    callback(error, body);
   });
 };
 
-Client.prototype.getNotification = function(hash, fn){
+Client.prototype.getNotification = function(hash, callback){
   var url = this.api+'v1/accounts/'+this.account+'/notifications/'+hash+"?types=payment";
   request.get(url, { json: true },function(error, resp, body){
     if (error) {
-      fn(error, null);
+      callback(error, null);
     } else {
       var notification = body.notification;
       if (notification && notification.next_notification_url) {
-        var id = notification.next_notification_url.split('notifications/')[1].split('?')[0]; 
+        var id = notification.next_notification_url.split('notifications/')[1].split('?')[0];
         body.notification.next_notification_hash = id;
-        fn(null, body.notification);
+        callback(null, body.notification);
       } else {
-        fn('no notification', null);
+        callback('no notification', null);
       }
     }
-  });  
+  });
 };
 
-Client.prototype.getNextNotification = function(hash, fn) {
+Client.prototype.getNextNotification = function(hash, callback) {
   var self = this;
   self.getNotification(hash, function(error, notification) {
     if (error) {
-      return fn(error, null);
+      return callback(error, null);
     }
     if (notification.next_notification_hash) {
-      self.getNotification(hash, fn);
+      self.getNotification(hash, callback);
     } else {
-      fn(null, null);  
+      callback(null, null);
     }
   });
 }
 
-Client.prototype.setHash = function(paymentHash, fn) {
-  this.lastPaymentHash = paymentHash; 
-}
+Client.prototype.setHash = function(paymentHash, callback) {
+  this.lastPaymentHash = paymentHash;
+};
 
-Client.prototype.getPayment = function(hash, fn){
+Client.prototype.getPayment = function(hash, callback){
   var url = this.api+'v1/accounts/'+this.account+'/payments/'+hash;
   request.get(url, { json: true }, function(error, resp, body) {
     if (error) {
-      fn(error, null);
+      callback(error, null);
     } else {
-      fn(null, body.payment);
+      callback(null, body.payment);
     }
-  }) 
+  })
 };
 
-Client.prototype.getPayments = function(fn){
-  var url = this.api+'v1/accounts/'+this.account+'/payments';
-  request.get(url, { json: true }, function(error, resp, body) {
-    if (error) {
-      fn(error, null);
-    } else if (!body.success) {
-      fn(body.error, null);
-    } else {
-      fn(null, body.payments);
-    }
-  });
-};
-
-Client.prototype.getTransaction = function(opts, fn){
+Client.prototype.getTransaction = function(opts, callback){
   var url = this.api+'v1/addresses/'+this.account+'/txs/'+opts.transactionHash;
   request.get(url, {form: opts, json: true }, function(error, resp, body) {
-    fn(error, body);
-  }) 
+    callback(error, body);
+  })
 };
 
-Client.prototype.getServerStatus = function(opts, fn){
+Client.prototype.getServerStatus = function(opts, callback){
   var url = this.api+'v1/status';
   request.get(url, {form: opts, json: true }, function(error, resp, body) {
-    fn(error, body);
+    callback(error, body);
   });
 };
 
-Client.prototype.newPayment = function(opts, fn) {
+Client.prototype.newPayment = function(opts, callback) {
   var amount = opts.amount.toString() + opts.currency + opts.issuer;
   var url = this.api+'v1/accounts/'+this.account+'/payments/paths/'+opts.destination_account+'/'+amount;
   request.get(url, {form: opts, json: true }, function(error, resp, body) {
-    fn(error, body);
-  }) 
+    callback(error, body);
+  })
 };
 
-Client.prototype.updateAccountSettings = function(opts, fn) {
-  
+Client.prototype.updateAccountSettings = function(opts, callback) {
+
   var account = opts.account || this.account;
   opts.data.secret = opts.data.secret || this.secret;
 
@@ -143,20 +140,20 @@ Client.prototype.updateAccountSettings = function(opts, fn) {
   };
 
   request.post(options, function(error, resp, body){
-    fn(error, body);
+    callback(error, body);
   });
 };
 
-Client.prototype.confirmPayment = function(hash, fn) {
+Client.prototype.confirmPayment = function(hash, callback) {
   var client = this;
   function poll(hash, callback){
     client.getPayment(hash, function(error, payment){
       if(error) {
-        fn(error, null);
+        callback(error, null);
         return;
       } else {
         if(payment){
-          fn(null, payment);
+          callback(null, payment);
         } else {
           setTimeout(function(){
             poll(hash, poll);
@@ -181,9 +178,7 @@ Client.prototype.getPaymentStatus = function(statusUrl, callback){
 
 Client.prototype._getAndHandlePaymentStatus = function(statusUrl, callback, loopFunction){
   var self = this;
-
-  self.getPaymentStatus(statusUrl, function(error, response){
-
+  self.getPaymentStatus(statusUrl.status_url, function(error, response){
     if(error){
       callback(error, null);
       return loopFunction(statusUrl, callback, loopFunction);
@@ -203,47 +198,84 @@ Client.prototype.pollPaymentStatus = function(paymentUrl, callback){
   self._getAndHandlePaymentStatus(paymentUrl, callback, self._getAndHandlePaymentStatus.bind(this));
 };
 
-Client.prototype.getTrustLines = function(opts, callback){
-  var account = opts.fromAccount || this.account;
-  var url = this.api + 'v1/accounts/'+account+'/trustlines';
-
-  if (opts.toAccount) {
-    url += '?toAccount=' + opts.toAccount;
-  }
-
-  if (opts.toAccount && opts.currency) {
-    url += '&currency='+opts.currency;
-  }
-
-  var options = {
-    url: url,
-    json: true
-  };
-
-  request.get(options, function(error, resp, body){
-    callback(error, body.trustlines);
-  });
-};
-
 Client.prototype.setTrustLines = function(options, callback){
   var account = options.account || this.account;
-  
   var options = {
     url: this.api + 'v1/accounts/'+account+'/trustlines',
     json: {
       secret: options.secret,
       trustline: {
-        limit: options.amount,
+        limit: options.limit,
         currency: options.currency,
-        counterparty: options.issuer
+        counterparty: options.counterparty
       }
     }
   };
 
   request.post(options, function(error, resp, body) {
     callback(error, body.trustline);
-  });
+  })
 
+};
+
+Client.prototype.getTrustLines = function(options, callback){
+
+  var account = options.fromAccount || this.account;
+  var url = this.api + 'v1/accounts/'+account+'/trustlines';
+
+  if (options.toAccount) {
+    url += '?counterparty=' + options.toAccount;
+  }
+
+  if (options.toAccount && options.currency) {
+    url += '&currency='+options.currency;
+  }
+
+  var settings = {
+    url: url,
+    json: true
+  };
+
+  request.get(settings, function(error, resp, body){
+    callback(error, body.trustlines);
+  });
+};
+
+Client.prototype.setTrustLines = function(options, callback){
+  var account = options.account || this.account;
+  var options = {
+    url: this.api + 'v1/accounts/'+account+'/trustlines',
+    json: {
+      secret: options.secret,
+      trustline: {
+        limit: options.limit,
+        currency: options.currency,
+        counterparty: options.counterparty
+      }
+    }
+  };
+
+  request.post(options, function(error, resp, body) {
+    callback(error, body.trustline);
+  })
+
+};
+
+Client.prototype.sendAndConfirmPayment = function(opts, callback){
+  var self = this;
+  async.waterfall([
+    function(next){
+      self.sendPayment(opts, next);
+    },
+    function(payment, next){
+      self.pollPaymentStatus(payment, next);
+    },
+  ], callback);
+};
+
+Client.prototype._handleError = function(error, callback){
+  this.errors.push({ field: 'ripple_rest_client', message: error });
+  callback(error, null);
 };
 
 module.exports = Client;
