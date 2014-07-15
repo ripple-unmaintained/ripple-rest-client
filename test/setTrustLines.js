@@ -18,9 +18,9 @@ describe('Ripple REST Client setTrustLines', function() {
       var trust = {
         account: 'rMinhWxZz4jeHoJGyddtmwg6dWhyqQKtJz',
         secret: SECRET,
-        amount: 1,
-        currency: 'POO',
-        issuer: 'rscJF4TWS2jBe43MvUomTtCcyrbtTRMSNr'
+        limit: 100,
+        currency: 'RUU',
+        counterparty: 'rscJF4TWS2jBe43MvUomTtCcyrbtTRMSNr'
       };
 
       client.setTrustLines(trust, function(error, response){
