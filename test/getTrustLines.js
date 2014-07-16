@@ -12,19 +12,26 @@ describe('Ripple REST Client getTrustLines', function() {
   });
 
 
-  it('should get trust lines between two given accounts', function(done){
-    var account = client.account;
+  it('should get trust lines of accounts', function(done){
 
-    client.getTrustLines(account, function(error, response){
-      assert.strictEqual(typeof response, 'object');
-      assert.strictEqual(account, response[0].account);
+    var options = {
+      fromAccount: client.account
+    };
+
+    client.getTrustLines(options, function(error, response){
+      assert.strictEqual(options.fromAccount, response[0].account);
       done();
     });
   });
 
   it('should fail because of missing account', function(done){
-    var account = '';
-    client.getTrustLines(account, function(error, response){
+    client.account = '';
+
+    var options = {
+      fromAccount: ''
+    };
+
+    client.getTrustLines(options, function(error, response){
       assert(!response);
       done();
     });

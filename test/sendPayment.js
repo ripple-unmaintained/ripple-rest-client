@@ -7,7 +7,7 @@ var uuid = require('node-uuid');
 var SECRET = process.env.RIPPLE_ACCOUNT_SECRET;
 
 describe('Ripple REST Client sendPayment', function() {
-  var client, payment;
+  var client, payment, nonXRPayment;
 
   before(function () {
     client = new Client({
@@ -25,7 +25,6 @@ describe('Ripple REST Client sendPayment', function() {
         partial_payment: false,
         no_direct_ripple: false
       };
-
       var paymentObj = {
         payment: payment,
         client_resource_id: uuid.v4(),
@@ -40,18 +39,10 @@ describe('Ripple REST Client sendPayment', function() {
       });
 
     });
+
   } else {
     it.skip('should send payment');
   }
-
-
-  it('should payment status response must match', function(done){
-    client.getPaymentStatus(payment.status_url, function(error, response){
-      assert.strictEqual(response.source_account, payment.source_account);
-      assert.strictEqual(response.destination_account, payment.destination_account);
-      done();
-    });
-  });
 
   it('should fail because it\'s missing source_account and secret', function(done){
     var failedPayment = {
@@ -70,10 +61,9 @@ describe('Ripple REST Client sendPayment', function() {
     };
 
     client.sendPayment(paymentObj, function(error, response){
-      assert.strictEqual(response.success, false);
+      assert.strictEqual(error, 'Invalid parameter: source_account. Must be a valid Ripple address');
       done();
     });
-
   });
 
 });
