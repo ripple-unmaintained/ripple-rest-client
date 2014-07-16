@@ -1,5 +1,6 @@
 var request = require('request');
 var async = require('async');
+var uuid = require('node-uuid');
 
 var Client = function(opts) {
   this.api = opts.api || 'http://localhost:5990/';
@@ -17,6 +18,11 @@ Client.prototype.ping = function(callback){
 };
 
 Client.prototype.sendPayment = function(opts, callback){
+
+  if (this.secret != '') {
+    opts.secret = this.secret;
+    opts.client_resource_id = uuid.v4();
+  }
 
   var options = {
     url: this.api+'v1/payments',
@@ -239,26 +245,6 @@ Client.prototype.getTrustLines = function(options, callback){
   request.get(settings, function(error, resp, body){
     callback(error, body.trustlines);
   });
-};
-
-Client.prototype.setTrustLines = function(options, callback){
-  var account = options.account || this.account;
-  var options = {
-    url: this.api + 'v1/accounts/'+account+'/trustlines',
-    json: {
-      secret: options.secret,
-      trustline: {
-        limit: options.limit,
-        currency: options.currency,
-        counterparty: options.counterparty
-      }
-    }
-  };
-
-  request.post(options, function(error, resp, body) {
-    callback(error, body.trustline);
-  })
-
 };
 
 Client.prototype.sendAndConfirmPayment = function(opts, callback){
