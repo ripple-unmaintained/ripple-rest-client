@@ -78,7 +78,7 @@ Client.prototype.getNotification = function(hash, callback){
         body.notification.next_notification_hash = id;
         callback(null, body.notification);
       } else {
-        callback('no notification', null);
+        callback(null, null);
       }
     }
   });
