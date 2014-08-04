@@ -184,18 +184,16 @@ Client.prototype.getPaymentStatus = function(statusUrl, callback){
 
 Client.prototype._getAndHandlePaymentStatus = function(statusUrl, callback, loopFunction){
   var self = this;
-  self.getPaymentStatus(statusUrl.status_url, function(error, response){
+  self.getPaymentStatus(statusUrl, function(error, response){
     if(error){
       callback(error, null);
       return loopFunction(statusUrl, callback, loopFunction);
     }
-
     if (response.state === 'validated'){
       callback(null, response);
     } else {
       loopFunction(statusUrl, callback, loopFunction);
     }
-
   });
 };
 
