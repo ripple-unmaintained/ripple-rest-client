@@ -189,7 +189,7 @@ Client.prototype._getAndHandlePaymentStatus = function(statusUrl, callback, loop
       callback(error, null);
       return loopFunction(statusUrl, callback, loopFunction);
     }
-    if (response.state === 'validated'){
+    if (response && response.state === 'validated'){
       callback(null, response);
     } else {
       loopFunction(statusUrl, callback, loopFunction);
