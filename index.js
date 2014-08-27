@@ -113,8 +113,8 @@ Client.prototype.getPayment = function(hash, callback){
   })
 };
 
-Client.prototype.getTransaction = function(opts, callback){
-  var url = this.api+'v1/addresses/'+this.account+'/txs/'+opts.transactionHash;
+Client.prototype.getTransaction = function(hash, callback){
+  var url = this.api+'v1/transactions/'+hash;
   request.get(url, {form: opts, json: true }, function(error, resp, body) {
     callback(error, body);
   })
