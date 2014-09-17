@@ -192,14 +192,16 @@ Client.prototype._getAndHandlePaymentStatus = function(statusUrl, callback, loop
     if (response && response.state === 'validated'){
       callback(null, response);
     } else {
-      loopFunction(statusUrl, callback, loopFunction);
+      setImmediate(function(){
+        loopFunction(statusUrl, callback, loopFunction);
+      });
     }
   });
 };
 
-Client.prototype.pollPaymentStatus = function(paymentUrl, callback){
+Client.prototype.pollPaymentStatus = function(payment, callback){
   var self = this;
-  self._getAndHandlePaymentStatus(paymentUrl, callback, self._getAndHandlePaymentStatus.bind(this));
+  self._getAndHandlePaymentStatus(payment.status_url, callback, self._getAndHandlePaymentStatus.bind(this));
 };
 
 Client.prototype.setTrustLines = function(options, callback){
