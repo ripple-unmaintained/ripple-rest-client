@@ -1,13 +1,14 @@
-var request = require('request');
-var async = require('async');
-var uuid = require('node-uuid');
+const request = require('request'); const async = require('async');
+const uuid = require('node-uuid');
+const paymentController = require(__dirname+'/lib/controllers/payments.js');
 
-var Client = function(opts) {
-  this.api = opts.api || 'http://localhost:5990/';
-  this.account = opts.account;
-  this.secret = opts.secret || '';
-  this.lastPaymentHash = opts.lastPaymentHash;
+var Client = function(options) {
+  this.api = options.api || 'http://localhost:5990/';
+  this.account = options.account;
+  this.secret = options.secret || '';
+  this.lastPaymentHash = options.lastPaymentHash;
   this.errors = [];
+  this.version = options.version || 1;
 }
 
 Client.prototype.ping = function(callback){
@@ -103,6 +104,9 @@ Client.prototype.setHash = function(paymentHash, callback) {
 };
 
 Client.prototype.getPayment = function(hash, callback){
+  if (this.version === 2) {
+    return paymentController.getPayment.call(this, hash);
+  }
   var url = this.api+'v1/accounts/'+this.account+'/payments/'+hash;
   request.get(url, { json: true }, function(error, resp, body) {
     if (error) {
