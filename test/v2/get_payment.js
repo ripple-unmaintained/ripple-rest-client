@@ -13,7 +13,6 @@ describe('Getting a single payment', function() {
   it('should return the formatted payment object', function(done) {
     client.getPayment(PAYMENT_HASH)
     .then(function(payment) {
-      console.log(payment);
       assert.strictEqual(payment.destination_account, 'r4tFZoa7Dk5nbEEaCeKQcY3rS5jGzkbn8a')
       done();
     })
@@ -30,10 +29,10 @@ describe('Getting a single payment', function() {
     });
   });
 
-  it.skip('should error if the transaction is not a payment', function(done) {
+  it('should error if the transaction is not a payment', function(done) {
     client.getPayment(TRUSTSET_HASH)
-    .catch(Client.TransactionNotPayment, function(error) {
-      assert(error instanceof Error);
+    .error(function(error) {
+      assert.strictEqual(error.message, 'TransactionNotPayment');
       done();
     });
   });
