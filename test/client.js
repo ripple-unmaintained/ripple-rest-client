@@ -77,7 +77,7 @@ describe('Ripple REST Client', function(){
   });
 
   describe('retrieving a raw transaction', function(){
-    it('should GET /txs with a transaction hash', function(){
+    it.skip('should GET /txs with a transaction hash', function(){
       request.get = sinon.spy();
       var url = 'v1/addresses/'+gateway+'/txs/sometr@ns@ct10nha$h';
       var payment = {
