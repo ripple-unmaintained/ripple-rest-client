@@ -1,6 +1,6 @@
 const request = require('request'); const async = require('async');
 const uuid = require('node-uuid');
-const paymentController = require(__dirname+'/lib/controllers/payments.js');
+const RippleRestV1 = require(__dirname+'/lib/clients/rest_v1.js');
 
 var Client = function(options) {
   this.api = options.api || 'http://localhost:5990/';
@@ -104,9 +104,6 @@ Client.prototype.setHash = function(paymentHash, callback) {
 };
 
 Client.prototype.getPayment = function(hash, callback){
-  if (this.version === 2) {
-    return paymentController.getPayment.call(this, hash);
-  }
   var url = this.api+'v1/accounts/'+this.account+'/payments/'+hash;
   request.get(url, { json: true }, function(error, resp, body) {
     if (error) {
@@ -267,5 +264,15 @@ Client.prototype._handleError = function(error, callback){
   this.errors.push({ field: 'ripple_rest_client', message: error });
   callback(error, null);
 };
+
+Client.RippleAPI = function(options) {
+  switch(options.adapter.toLowerCase()) {
+    case 'rest':
+      return new RippleRestV1(options);
+      break;
+    default:
+      throw new Error('InvalidAdapter')
+  }
+}
 
 module.exports = Client;
