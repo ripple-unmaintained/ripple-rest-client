@@ -36,6 +36,11 @@ Sending a Payment:
 
 http://dev.ripple.com/rest-api-tool.html#get-payment-history
 
+    const ripple = new RippleAPI({
+      adapter: 'rest',
+      url: 'http://127.0.0.1:5990'
+    })
+
 The following API methods return an instance of Promise
 
 Generate Account
@@ -148,7 +153,7 @@ Retrive Ripple Transaction
       hash: 'A7C3B03663C205C84C7A91730A3E7874A88969B50D80471D8E62BFC04D2EA07A'
     })
 
-Generatue UUID
+Generate UUID
 
     ripple.generateUUID()
 
