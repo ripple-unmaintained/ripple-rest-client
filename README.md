@@ -32,3 +32,33 @@ Sending a Payment:
       console.log(response);
     });
 
+#### Proposed API actions
+
+http://dev.ripple.com/rest-api-tool.html#get-payment-history
+
+Generate Account
+
+Get Account Balances
+
+Get Account Settings
+
+Update Account Settings
+
+Prepare Payment
+
+Submit Payment
+
+Confirm Payment
+
+Get Payment History
+
+Get Trustlines
+
+Grant Trustline
+
+Check Notifications
+
+Retrive Ripple Transaction
+
+Generatue UUID
+
