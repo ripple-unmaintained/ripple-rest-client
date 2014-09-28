@@ -41,6 +41,8 @@ http://dev.ripple.com/rest-api-tool.html#get-payment-history
       url: 'http://127.0.0.1:5990'
     })
 
+Adapters are planned for `rest`, `rpc`, and `websocket`.
+
 The following API methods return an instance of Promise
 
 Generate Account
