@@ -11,7 +11,7 @@ const TRUSTSET_HASH='34D7A8B40A8676AD5819C311C733B64CF97FDEF51095358288233A98E3F
 
 describe('Getting a single payment', function() {
   it('should return the formatted payment object', function(done) {
-    client.getPayment(PAYMENT_HASH)
+    client.confirmPayment(PAYMENT_HASH)
     .then(function(payment) {
       assert.strictEqual(payment.destination_account, 'r4tFZoa7Dk5nbEEaCeKQcY3rS5jGzkbn8a')
       done();
@@ -22,7 +22,7 @@ describe('Getting a single payment', function() {
   });
 
   it.skip('should return an error with unknown payment hash', function(done) {
-    client.getPayment('12345')
+    client.confirmPayment('12345')
     .catch(Client.InvalidPaymentHash, function(error) {
       assert(error instanceof Error);
       done();
@@ -30,7 +30,7 @@ describe('Getting a single payment', function() {
   });
 
   it('should error if the transaction is not a payment', function(done) {
-    client.getPayment(TRUSTSET_HASH)
+    client.confirmPayment(TRUSTSET_HASH)
     .error(function(error) {
       assert.strictEqual(error.message, 'TransactionNotPayment');
       done();
@@ -44,7 +44,7 @@ describe('Getting a single payment', function() {
     });
 
     it.skip('should return an error with no connection to ripple rest', function(done) {
-      client.getPayment(PAYMENT_HASH)
+      client.confirmPayment(PAYMENT_HASH)
       .catch(Client.RippleRestConnectionError, function(error) {
         assert(error instanceof Error); 
         done();

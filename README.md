@@ -68,20 +68,54 @@ Update Account Settings
 
 Prepare Payment
 
-  ripple.preparePayment({
-    account: 'r4EwBWxrx5HxYRyisfGzMto3AT8FZiYdWk',
-    destination: 'rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn',
-    amount: 10,
-    currency: 'BTC',
-    issuer: 'rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn',
-    source_currencies: ['USD']
-  })
+    ripple.preparePayment({
+      source_account: 'r4EwBWxrx5HxYRyisfGzMto3AT8FZiYdWk',
+      source_amount: {
+        "value": "1",
+        "currency": "USD"
+      },
+      destination_account: 'rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn',
+      destination_amount: {
+        value: "1",
+        currency: "USD",
+        issuer: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn"
+      },
+      invoice_id: 1234
+    })
 
 Submit Payment
 
+    ripple.submitPayment({
+      source_account: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn",
+      source_amount: {
+        "value": "1",
+        "currency": "USD"
+      },
+      destination_account: "ra5nK24KXen9AHvsdFTKHSANinZseWnPcX",
+      destination_tag: 567,
+      destination_amount: {
+        value: "1",
+        currency: "USD",
+        issuer: "rf1BiGeXwwQoi8Z2ueFYTEXSwuJYfV2Jpn"
+      },
+      invoice_id: 1234,
+      paths: [],
+      secret: "sssssssssssssssssssssssssssss",
+    })
+
 Confirm Payment
 
+    ripple.confirmPayment({
+      account: 'r4EwBWxrx5HxYRyisfGzMto3AT8FZiYdWk',
+      hash: 'A7C3B03663C205C84C7A91730A3E7874A88969B50D80471D8E62BFC04D2EA07A'
+    }) 
+
 Get Payment History
+
+    ripple.getPaymentHistory({
+      account: 'r4EwBWxrx5HxYRyisfGzMto3AT8FZiYdWk',
+      direction: 'incoming'
+    })
 
 Get Trustlines
 
@@ -93,6 +127,14 @@ Get Trustlines
 
 Grant Trustline
 
+    ripple.grantTrustline({
+      limit: 110,
+      currency: "USD",
+      counterparty: "rMwjYedjc7qqtKYVLiAccJSmCwih4LnE2q",
+      allows_rippling: false,
+      secret: 'sssssssssssssssssssssss'
+    })
+
 Check Notifications
 
     ripple.checkNotifications({
@@ -102,10 +144,11 @@ Check Notifications
 
 Retrive Ripple Transaction
 
-    ripple.retriveRippleTransaction({
+    ripple.retrieveRippleTransaction({
       hash: 'A7C3B03663C205C84C7A91730A3E7874A88969B50D80471D8E62BFC04D2EA07A'
     })
 
 Generatue UUID
 
     ripple.generateUUID()
+
