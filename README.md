@@ -36,6 +36,11 @@ Sending a Payment:
 
 http://dev.ripple.com/rest-api-tool.html#get-payment-history
 
+    ripple = new RippleAPI({
+      backend: 'rest',
+      url: 'http://127.0.0.1:5990'
+    })
+
 The following API methods return an instance of Promise
 
 Generate Account
