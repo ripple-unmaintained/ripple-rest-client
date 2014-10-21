@@ -23,7 +23,8 @@ describe('Ripple REST Client sendPayment', function() {
         destination_account: 'ra9EVPRsiqncEfrRpJudDV34AqxFao8Zv9',
         destination_amount: { value: '1', currency: 'XRP', issuer: '' },
         partial_payment: false,
-        no_direct_ripple: false
+        no_direct_ripple: false,
+        destination_tag: '0'
       };
 
       var paymentObj = {
@@ -33,6 +34,8 @@ describe('Ripple REST Client sendPayment', function() {
       };
 
       client.sendAndConfirmPayment(paymentObj, function(error, response){
+        console.log('err',  error);
+        console.log('response', response);
         assert.notStrictEqual(response, null);
         assert.strictEqual(response.source_account, payment.source_account);
         assert.strictEqual(response.result, 'tesSUCCESS');
@@ -46,9 +49,10 @@ describe('Ripple REST Client sendPayment', function() {
         source_account: 'rMinhWxZz4jeHoJGyddtmwg6dWhyqQKtJz',
         source_amount: { value: '1', currency: 'SWD', issuer: '' },
         destination_account: 'rscJF4TWS2jBe43MvUomTtCcyrbtTRMSNr',
-        destination_amount: { value: '1', currency: 'SWD', issuer: '' },
+        destination_amount: { value: '1', currency: 'SWD', issuer: 'rMinhWxZz4jeHoJGyddtmwg6dWhyqQKtJz' },
         partial_payment: false,
-        no_direct_ripple: false
+        no_direct_ripple: false,
+        destination_tag: '0'
       };
 
       var nonXRPaymentObj = {
@@ -58,6 +62,8 @@ describe('Ripple REST Client sendPayment', function() {
       };
 
       client.sendAndConfirmPayment(nonXRPaymentObj, function(error, response){
+        console.log('err',  error);
+        console.log('response', response);
         assert.strictEqual(response.source_account, payment.source_account);
         assert.strictEqual(response.result, 'tesSUCCESS');
         assert.strictEqual(response.destination_amount.currency, nonXRPayment.destination_amount.currency);
@@ -83,6 +89,8 @@ describe('Ripple REST Client sendPayment', function() {
       };
 
       client.sendAndConfirmPayment(paymentObj, function(error, response){
+        console.log('err',  error);
+        console.log('response', response);
         assert(error);
         done();
       });
