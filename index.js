@@ -26,13 +26,13 @@ Client.prototype.sendPayment = function(opts, callback){
   }
 
   var options = {
-    url: this.api+'v1/payments',
+    url: this.api+'v1/accounts/'+this.account+'/payments',
     json: opts
   };
 
   request.post(options, function(error, resp, body) {
     if (error) {
-      return callback(error, null);
+      return callback(error);
     }
 
     if (body.success) {
@@ -202,7 +202,11 @@ Client.prototype._getAndHandlePaymentStatus = function(statusUrl, callback, loop
 
 Client.prototype.pollPaymentStatus = function(payment, callback){
   var self = this;
-  self._getAndHandlePaymentStatus(payment.status_url, callback, self._getAndHandlePaymentStatus.bind(this));
+  if (payment && payment.status_url) {
+    self._getAndHandlePaymentStatus(payment.status_url, callback, self._getAndHandlePaymentStatus.bind(this));
+  } else {
+    callback(new Error('RippleRestPaymentError'));
+  }
 };
 
 Client.prototype.setTrustLines = function(options, callback){
