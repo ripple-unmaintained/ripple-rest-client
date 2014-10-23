@@ -1,8 +1,7 @@
-var Client = require('../');
-var assert = require('assert');
-var request = require('request');
-var sinon = require('sinon');
-var uuid = require('node-uuid');
+const Client = require('../');
+const assert = require('assert');
+const fixtures = require('./fixtures');
+const uuid = require('node-uuid');
 
 var SECRET = process.env.RIPPLE_ACCOUNT_SECRET;
 
@@ -11,24 +10,26 @@ describe('Ripple REST Client sendPayment', function() {
 
   before(function () {
     client = new Client({
-      account: 'rscJF4TWS2jBe43MvUomTtCcyrbtTRMSNr'
+      account: fixtures.ripple_address.source_account
     });
   });
 
   if(SECRET){
     it('should send payment', function(done){
+      this.timeout(5000);
       payment = {
-        source_account: 'rMinhWxZz4jeHoJGyddtmwg6dWhyqQKtJz',
-        source_amount: { value: '1', currency: 'XRP', issuer: '' },
-        destination_account: 'ra9EVPRsiqncEfrRpJudDV34AqxFao8Zv9',
-        destination_amount: { value: '1', currency: 'XRP', issuer: '' },
+        source_account: fixtures.ripple_address.source_account,
+        source_amount: { value: '0.05', currency: 'SWD', issuer: '' },
+        destination_account: fixtures.ripple_address.destination_account,
+        destination_amount: { value: '0.056', currency: 'SWD', issuer: fixtures.ripple_address.source_account },
         partial_payment: false,
-        no_direct_ripple: false
+        no_direct_ripple: false,
+        destination_tag: '0'
       };
       var paymentObj = {
         payment: payment,
         client_resource_id: uuid.v4(),
-        secret: SECRET
+        secret: fixtures.ripple_address.source_account_secret
       };
 
       client.sendPayment(paymentObj, function(error, response){
@@ -41,27 +42,30 @@ describe('Ripple REST Client sendPayment', function() {
     });
 
   } else {
-    it.skip('should send payment');
+    it.skip('skipping this test because secret is not provided.');
   }
 
   it('should fail because it\'s missing source_account and secret', function(done){
     var failedPayment = {
       source_account: '',
       source_amount: { value: '1', currency: 'XRP', issuer: '' },
-      destination_account: 'ra9EVPRsiqncEfrRpJudDV34AqxFao8Zv9',
+      destination_account: fixtures.ripple_address.destination_account,
       destination_amount: { value: '1', currency: 'XRP', issuer: '' },
       partial_payment: false,
-      no_direct_ripple: false
+      no_direct_ripple: false,
+      destination_tag: '0'
     };
 
     var paymentObj = {
       payment: failedPayment,
       client_resource_id: uuid.v4(),
-      secret: SECRET
+      secret: fixtures.ripple_address.source_account_secret
     };
 
     client.sendPayment(paymentObj, function(error, response){
-      assert.strictEqual(error, 'Invalid parameter: source_account. Must be a valid Ripple address');
+      assert(!error.success);
+      assert(error.error_type, 'invalid_request');
+      assert(error.error, 'Invalid parameter: source_account');
       done();
     });
   });
