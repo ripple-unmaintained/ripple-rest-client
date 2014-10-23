@@ -1,6 +1,7 @@
 const request = require('request'); const async = require('async');
 const uuid = require('node-uuid');
 const RippleRestV1 = require(__dirname+'/lib/clients/rest_v1.js');
+const http = require('superagent');
 
 var Client = function(options) {
   this.api = options.api || 'http://localhost:5990/';
@@ -18,29 +19,30 @@ Client.prototype.ping = function(callback){
   });
 };
 
-Client.prototype.sendPayment = function(opts, callback){
+Client.prototype.sendPayment = function(payment, callback){
+  var payment = payment;
+  var url = this.api+'v1/accounts/'+this.account+'/payments';
 
-  if (this.secret != '') {
-    opts.secret = this.secret;
-    opts.client_resource_id = uuid.v4();
+  if (this.secret !== '') {
+    payment.secret = this.secret;
+    payment.client_resource_id = uuid.v4();
   }
 
-  var options = {
-    url: this.api+'v1/accounts/'+this.account+'/payments',
-    json: opts
-  };
+  http
+    .post(url)
+    .send(payment)
+    .end(function(error, response) {
 
-  request.post(options, function(error, resp, body) {
-    if (error) {
-      return callback(error);
-    }
+      if (error) {
+        return callback(error);
+      }
 
-    if (body.success) {
-      callback(null, body);
-    } else {
-      callback(body.message, null);
-    }
-  });
+      if (response.body.success) {
+        callback(null, response.body);
+      } else {
+        callback(response.body, null);
+      }
+    });
 };
 
 Client.prototype.getAccountBalance = function(callback){
@@ -62,22 +64,38 @@ Client.prototype.buildPayment = function(opts, callback){
     amount += ("+"+ opts.issuer);
   }
   var url = this.api+'v1/accounts/'+this.account+'/payments/paths/'+opts.recipient+'/'+amount;
-  request.get({ url: url, json: true }, function(error, resp, body){
-    callback(error, body);
-  });
+  http
+    .get(url)
+    .end(function(error, response){
+
+      if (error) {
+        return callback(error);
+      }
+
+      if (response.body.success) {
+        callback(null, response.body);
+      } else {
+        callback(response.body);
+      }
+
+    });
 };
 
 Client.prototype.getNotification = function(hash, callback){
   var url = this.api+'v1/accounts/'+this.account+'/notifications/'+hash+"?types=payment";
-  request.get(url, { json: true },function(error, resp, body){
+
+  http
+    .get(url)
+    .end(function(error, response){
     if (error) {
-      callback(error, null);
+      callback(error);
     } else {
-      var notification = body.notification;
+      var notification = response.body.notification;
+
       if (notification && notification.next_notification_url) {
         var id = notification.next_notification_url.split('notifications/')[1].split('?')[0];
-        body.notification.next_notification_hash = id;
-        callback(null, body.notification);
+        response.body.notification.next_notification_hash = id;
+        callback(null, response.body.notification);
       } else {
         callback(null, null);
       }
@@ -173,11 +191,14 @@ Client.prototype.confirmPayment = function(hash, callback) {
 };
 
 Client.prototype.getPaymentStatus = function(statusUrl, callback){
-  request.get({url: statusUrl, json: true}, function(error, resp, body){
+
+  http.
+    get(statusUrl)
+    .end(function(error, response){
     if (error) {
       callback(error, null);
     } else {
-      callback(null, body.payment);
+      callback(null, response.body.payment);
     }
 
   });
