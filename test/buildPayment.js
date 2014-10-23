@@ -1,47 +1,41 @@
-var Client = require('../');
-var assert = require('assert');
-var request = require('request');
-var sinon = require('sinon');
+const Client = require('../');
+const assert = require('assert');
+const fixtures = require('./fixtures');
 
 describe('Ripple REST Client buildPayment', function() {
   var client;
 
   before(function () {
     client = new Client({
-      account: 'rscJF4TWS2jBe43MvUomTtCcyrbtTRMSNr'
+      account: fixtures.ripple_address.source_account
     });
   });
 
-  it('should build payment', function(done){
+  it('should successfully build payment', function(done){
+
     var newPayment = {
       currency: 'XRP',
-      amount: 1,
-      recipient: 'ra9EVPRsiqncEfrRpJudDV34AqxFao8Zv9'
+      amount: 0.05,
+      recipient: fixtures.ripple_address.destination_account
     };
 
-    if (!newPayment.currency == 'XRP') {
-      newPayment.issuer = 'rscJF4TWS2jBe43MvUomTtCcyrbtTRMSNr';
-    }
 
     client.buildPayment(newPayment, function(error, response){
+      assert(response);
+      assert(response.payments);
+      assert(response.payments.length > 0);
+      assert(response.payments[0].source_account, fixtures.ripple_address.source_account);
       assert.strictEqual(response.success, true);
-      console.log('error', error);
-      console.log('error', response.payments[0]);
       done();
     });
   });
 
-  it('should fail', function(done){
+  it('should fail due to an empty payment object', function(done){
     var newPayment = {};
 
-    if (!newPayment.currency == 'XRP') {
-      newPayment.issuer = 'rscJF4TWS2jBe43MvUomTtCcyrbtTRMSNr';
-    }
-
     client.buildPayment(newPayment, function(error, response){
-      assert.strictEqual(response.success, false);
-      console.log('error', error);
-      console.log('success', response);
+      assert.strictEqual(error.success, false);
+      assert.strictEqual(error.error_type, 'invalid_request');
       done();
     });
   });
