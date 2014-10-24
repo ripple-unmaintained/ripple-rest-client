@@ -4,7 +4,7 @@
   "description": "A Node.js client library for interacting with Ripple REST servers.",
   "main": "./index.js",
   "scripts": {
-    "test": "mocha -R spec test/"
+    "test": "mocha -R spec test/ --timeout=3000"
   },
   "repository": {
     "type": "git",
