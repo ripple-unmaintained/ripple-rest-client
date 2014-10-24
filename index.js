@@ -1,4 +1,4 @@
-const request = require('request'); const async = require('async');
+const async = require('async');
 const uuid = require('node-uuid');
 const RippleRestV1 = require(__dirname+'/lib/clients/rest_v1.js');
 const http = require('superagent');
@@ -14,8 +14,14 @@ var Client = function(options) {
 
 Client.prototype.ping = function(callback){
   var url = this.api;
-  request.get({ url: url, json: true }, function(error, resp, body){
-    callback(error, body);
+  http
+    .get(url)
+    .end(function(error, response){
+      if (error) {
+        callback(error);
+      } else {
+        callback(null, response.body);
+      }
   });
 };
 
@@ -48,11 +54,13 @@ Client.prototype.sendPayment = function(payment, callback){
 Client.prototype.getAccountBalance = function(callback){
   var url = this.api+'v1/accounts/'+this.account+'/balances';
 
-  request.get({url: url, json: true}, function(error, resp, body){
+  http
+    .get(url)
+    .end(function(error, response){
     if(error){
-      callback(error, null);
+      callback(error);
     } else {
-      callback(null, body);
+      callback(null, response.body);
     }
   });
 };
@@ -87,15 +95,15 @@ Client.prototype.getNotification = function(hash, callback){
   http
     .get(url)
     .end(function(error, response){
+
     if (error) {
       callback(error);
     } else {
       var notification = response.body.notification;
 
-      if (notification && notification.next_notification_url) {
-        var id = notification.next_notification_url.split('notifications/')[1].split('?')[0];
-        response.body.notification.next_notification_hash = id;
-        callback(null, response.body.notification);
+      if (notification && notification.next_hash) {
+        notification.next_notification_hash = notification.next_hash;
+        callback(null, notification);
       } else {
         callback(null, null);
       }
@@ -103,56 +111,67 @@ Client.prototype.getNotification = function(hash, callback){
   });
 };
 
-Client.prototype.getNextNotification = function(hash, callback) {
-  var self = this;
-  self.getNotification(hash, function(error, notification) {
-    if (error) {
-      return callback(error, null);
-    }
-    if (notification.next_notification_hash) {
-      self.getNotification(hash, callback);
-    } else {
-      callback(null, null);
-    }
-  });
-}
-
 Client.prototype.setHash = function(paymentHash, callback) {
   this.lastPaymentHash = paymentHash;
 };
 
 Client.prototype.getPayment = function(hash, callback){
   var url = this.api+'v1/accounts/'+this.account+'/payments/'+hash;
-  request.get(url, { json: true }, function(error, resp, body) {
-    if (error) {
-      callback(error, null);
-    } else {
-      callback(null, body.payment);
-    }
-  })
+
+  http
+    .get(url)
+    .end(function(error, response) {
+      if (error) {
+        callback(error);
+      } else {
+        callback(null, response.body.payment);
+      }
+    });
+};
+
+
+Client.prototype.getPayments = function(account, callback){
+  var account = account || this.account;
+  var url = this.api+'v1/accounts/'+account+'/payments';
+
+  http
+    .get(url)
+    .end(function(error, response){
+      if (error) {
+        callback(error);
+      } else if (response.body.success) {
+        callback(null, response.body.payments);
+      } else {
+        callback(response.body);
+      }
+  });
 };
 
 Client.prototype.getTransaction = function(hash, callback){
   var url = this.api+'v1/transactions/'+hash;
-  request.get(url, { json: true }, function(error, resp, body) {
-    callback(error, body);
-  })
+
+  http
+    .get(url)
+    .end(function(error, response){
+      if (error) {
+        callback(error);
+      } else if (response.body.success) {
+        callback(null, response.body);
+      } else {
+        callback(response.body);
+      }
+    });
 };
 
 Client.prototype.getServerStatus = function(opts, callback){
   var url = this.api+'v1/status';
-  request.get(url, {form: opts, json: true }, function(error, resp, body) {
-    callback(error, body);
-  });
+  http
+    .get(url)
+    .end(function(error, response) {
+      callback(error, response.body);
+    });
 };
 
-Client.prototype.newPayment = function(opts, callback) {
-  var amount = opts.amount.toString() + opts.currency + opts.issuer;
-  var url = this.api+'v1/accounts/'+this.account+'/payments/paths/'+opts.destination_account+'/'+amount;
-  request.get(url, {form: opts, json: true }, function(error, resp, body) {
-    callback(error, body);
-  })
-};
 
 Client.prototype.updateAccountSettings = function(opts, callback) {
 
@@ -164,31 +183,14 @@ Client.prototype.updateAccountSettings = function(opts, callback) {
     json: opts.data
   };
 
-  request.post(options, function(error, resp, body){
-    callback(error, body);
-  });
+  http
+    .post(options.url)
+    .send(options.json)
+    .end(function(error, response){
+      callback(error, response.body);
+    });
 };
 
-Client.prototype.confirmPayment = function(hash, callback) {
-  var client = this;
-  function poll(hash, callback){
-    client.getPayment(hash, function(error, payment){
-      if(error) {
-        callback(error, null);
-        return;
-      } else {
-        if(payment){
-          callback(null, payment);
-        } else {
-          setTimeout(function(){
-            poll(hash, poll);
-          }, 1000);
-        };
-      };
-    });
-  };
-  poll();
-};
 
 Client.prototype.getPaymentStatus = function(statusUrl, callback){
 
@@ -244,9 +246,12 @@ Client.prototype.setTrustLines = function(options, callback){
     }
   };
 
-  request.post(options, function(error, resp, body) {
-    callback(error, body.trustline);
-  })
+  http
+    .post(options.url)
+    .send(options.json)
+    .end(function(error, response) {
+      callback(error, response.body.trustline);
+    });
 
 };
 
@@ -268,9 +273,11 @@ Client.prototype.getTrustLines = function(options, callback){
     json: true
   };
 
-  request.get(settings, function(error, resp, body){
-    callback(error, body.trustlines);
-  });
+  http
+    .get(settings.url)
+    .end(function(error, response){
+      callback(error, response.body.trustlines);
+    });
 };
 
 Client.prototype.sendAndConfirmPayment = function(opts, callback){
