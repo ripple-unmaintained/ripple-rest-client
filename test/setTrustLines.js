@@ -1,26 +1,24 @@
-var Client = require('../');
-var assert = require('assert');
-var request = require('request');
-
-var SECRET = process.env.RIPPLE_ACCOUNT_SECRET;
+const Client = require('../');
+const assert = require('assert');
+const fixtures = require('./fixtures');
 
 describe('Ripple REST Client setTrustLines', function() {
   var client;
 
   before(function () {
     client = new Client({
-      account: 'rMinhWxZz4jeHoJGyddtmwg6dWhyqQKtJz'
+      account: fixtures.ripple_address.source_account
     });
   });
 
-  if(SECRET){
+  if(fixtures.ripple_address.source_account_secret){
     it('should set trust lines between two given accounts', function(done){
       var trust = {
-        account: 'rMinhWxZz4jeHoJGyddtmwg6dWhyqQKtJz',
-        secret: SECRET,
+        account: fixtures.ripple_address.source_account,
+        secret: fixtures.ripple_address.source_account_secret,
         limit: 100,
         currency: 'RUU',
-        counterparty: 'rscJF4TWS2jBe43MvUomTtCcyrbtTRMSNr'
+        counterparty: fixtures.ripple_address.destination_account
       };
 
       client.setTrustLines(trust, function(error, response){
@@ -38,7 +36,7 @@ describe('Ripple REST Client setTrustLines', function() {
       secret: '',
       amount: 1,
       currency: 'SWG',
-      issuer: 'rscJF4TWS2jBe43MvUomTtCcyrbtTRMSNr'
+      issuer: fixtures.ripple_address.source_account
     };
 
     client.setTrustLines(trust, function(error, response){
