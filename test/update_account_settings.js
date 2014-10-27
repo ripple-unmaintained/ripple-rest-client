@@ -1,38 +1,36 @@
-var Client = require('../');
-var assert = require('assert');
-var sinon = require('sinon');
-var request = require('request');
-
-var recipient = 'rp4u5gEskM8DtBZvonZwbu6dspgVdeAGM6';
-var gateway = 'rMinhWxZz4jeHoJGyddtmwg6dWhyqQKtJz';
+const RippleRestClient = require('../');
+const assert = require('assert');
+const fixtures = require('./fixtures');
 
 describe('updating account settings', function() {
-  before(function(){
-    client = new Client({
-      api: 'http://localhost:5990/',
-      account: gateway,
-      secret: 'sp1RTbeq9djvXFyGfmS2v3XMKcgVa'
+  before(function () {
+    this.timeout(3000);
+    rippleRestClient = new RippleRestClient({
+      account: fixtures.ripple_address.source_account
     });
   });
 
   it('should set require destination tag', function(done) {
 
     var optsHotWallet = {
-      account: 'rMinhWxZz4jeHoJGyddtmwg6dWhyqQKtJz',
+      account: fixtures.ripple_address.source_account,
       data: {
-        secret: '<secret>',
+        secret: fixtures.ripple_address.source_account_secret,
         settings: {
-          disallow_xrp: false,
-          require_destination_tag: false
+          require_destination_tag: false,
+          disallow_xrp: false
         }
       }
     };
 
-    client.updateAccountSettings(optsHotWallet, function(err, settings) {
-      console.log(err, settings);
-      assert(!err);
-      assert(settings);
+    rippleRestClient.updateAccountSettings(optsHotWallet, function(error, settings) {
+      assert(!error);
+      assert(settings.success);
+      assert(settings.hash);
+      assert.strictEqual(optsHotWallet.data.settings.require_destination_tag, settings.settings.require_destination_tag);
+      assert.strictEqual(optsHotWallet.data.settings.disallow_xrp, settings.settings.disallow_xrp);
       done();
     });
-  })
+  });
+
 });

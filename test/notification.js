@@ -1,20 +1,43 @@
-var Client = require('../lib/client');
+const RippleRestClient = require('../');
+const assert = require('assert');
+const fixtures = require('./fixtures');
 
-var client = new Client({
-  api: 'http://localhost:5990/',
-  account: 'rUC2yaGet1kGWdvf6d7MJ27PqBx44sT9yP',
-  secret: ''
-});
+describe('Ripple REST Client get payment notification', function() {
+  var rippleRestClient;
+  var payment_hashes = {};
 
-
-var paymentHash = 'DA4EC693170FA31CC1053D82AE24C35C00DF656AFD583450A9C36ECC6AFFBD7D';
-
-client.getNotification(paymentHash, function(err, notification) {
-  if (notification.next_notification_url) {
-    client.getNextPayment(paymentHash, function(err, payment) {
-      console.log(payment);
+  before(function (done) {
+    this.timeout(3000);
+    rippleRestClient = new RippleRestClient({
+      account: fixtures.ripple_address.source_account
     });
-  } else {
-    console.log('no next notification');
-  }
+
+    rippleRestClient.getPayments(null, function(error, payments){
+      payment_hashes.latest_hash = payments[0].payment.hash;
+      payment_hashes.previous_hash = payments[1].payment.hash;
+      done();
+    });
+    
+
+  });
+
+  it('should should get NO notification', function(done){
+    this.timeout(8000);
+    rippleRestClient.getNotification(payment_hashes.latest_hash, function(error, response){
+      assert(!response);
+      assert(!error);
+      done();
+    });
+  });
+
+  it('should should get a notification', function(done){
+    this.timeout(5000);
+    rippleRestClient.getNotification(payment_hashes.previous_hash, function(error, response){
+      assert(response);
+      assert(response.hash);
+      assert.strictEqual(response.next_hash, payment_hashes.latest_hash);
+      done();
+    });
+  });
+
 });
