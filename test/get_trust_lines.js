@@ -15,6 +15,7 @@ describe('Ripple REST Client getTrustLines', function() {
   it('should get trust lines of accounts', function(done){
 
     rippleRestClient.getTrustLines(rippleRestClient.account, function(error, response){
+      assert(response);
       assert(response instanceof Array);
       done();
     });
