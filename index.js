@@ -25,6 +25,42 @@ Client.prototype.ping = function(callback){
   });
 };
 
+Client.prototype.generateUUID = function(callback) {
+  var url = this.api+'v1/uuid';
+
+  http
+    .get(url)
+    .end(function(error, response){
+      if (error) {
+        return callback(error);
+      }
+
+      if (response.body.success) {
+        callback(null, response.body.uuid);
+      } else {
+        callback(response.body);
+      }
+    });
+};
+
+Client.prototype.generateNewWallet = function(callback) {
+  var url = this.api+'v1/wallet/new';
+
+  http
+    .get(url)
+    .end(function(error, response){
+      if (error) {
+        return callback(error);
+      }
+
+      if (response.body.success) {
+        callback(null, response.body.wallet);
+      } else {
+        callback(response.body);
+      }
+    });
+};
+
 Client.prototype.sendPayment = function(payment, callback){
   var payment = payment;
   var url = this.api+'v1/accounts/'+this.account+'/payments';
@@ -46,7 +82,7 @@ Client.prototype.sendPayment = function(payment, callback){
       if (response.body.success) {
         callback(null, response.body);
       } else {
-        callback(response.body, null);
+        callback(response.body);
       }
     });
 };
@@ -57,11 +93,15 @@ Client.prototype.getAccountBalance = function(callback){
   http
     .get(url)
     .end(function(error, response){
-    if(error){
-      callback(error);
-    } else {
-      callback(null, response.body);
-    }
+      if (error) {
+        return callback(error);
+      }
+
+      if (response.body.success) {
+        callback(null, response.body);
+      } else {
+        callback(response.body);
+      }
   });
 };
 
@@ -122,9 +162,13 @@ Client.prototype.getPayment = function(hash, callback){
     .get(url)
     .end(function(error, response) {
       if (error) {
-        callback(error);
-      } else {
+        return callback(error);
+      }
+
+      if (response.body.success) {
         callback(null, response.body.payment);
+      } else {
+        callback(response.body);
       }
     });
 };
@@ -154,8 +198,10 @@ Client.prototype.getTransaction = function(hash, callback){
     .get(url)
     .end(function(error, response){
       if (error) {
-        callback(error);
-      } else if (response.body.success) {
+        return callback(error);
+      }
+
+      if (response.body.success) {
         callback(null, response.body);
       } else {
         callback(response.body);
@@ -168,7 +214,15 @@ Client.prototype.getServerStatus = function(opts, callback){
   http
     .get(url)
     .end(function(error, response) {
-      callback(error, response.body);
+      if (error) {
+        return callback(error);
+      }
+
+      if (response.body.success) {
+        callback(null, response.body);
+      } else {
+        callback(response.body);
+      }
     });
 };
 
@@ -187,7 +241,15 @@ Client.prototype.updateAccountSettings = function(opts, callback) {
     .post(options.url)
     .send(options.json)
     .end(function(error, response){
-      callback(error, response.body);
+      if (error) {
+        return callback(error);
+      }
+
+      if (response.body.success) {
+        callback(null, response.body);
+      } else {
+        callback(response.body);
+      }
     });
 };
 
@@ -197,11 +259,15 @@ Client.prototype.getPaymentStatus = function(statusUrl, callback){
   http.
     get(statusUrl)
     .end(function(error, response){
-    if (error) {
-      callback(error, null);
-    } else {
-      callback(null, response.body.payment);
-    }
+      if (error) {
+        return callback(error);
+      }
+
+      if (response.body.success) {
+        callback(null, response.body.payment);
+      } else {
+        callback(response.body);
+      }
 
   });
 };
@@ -228,7 +294,7 @@ Client.prototype.pollPaymentStatus = function(payment, callback){
   if (payment && payment.status_url) {
     self._getAndHandlePaymentStatus(payment.status_url, callback, self._getAndHandlePaymentStatus.bind(this));
   } else {
-    callback(new Error('RippleRestPaymentError'));
+    callback(new Error('RippleRestError:StatusUrlUnavailable'));
   }
 };
 
@@ -250,7 +316,15 @@ Client.prototype.setTrustLines = function(options, callback){
     .post(options.url)
     .send(options.json)
     .end(function(error, response) {
-      callback(error, response.body.trustline);
+      if (error) {
+        return callback(error);
+      }
+
+      if (response.body.success) {
+        callback(null, response.body.trustline);
+      } else {
+        callback(response.body);
+      }
     });
 
 };
@@ -276,7 +350,15 @@ Client.prototype.getTrustLines = function(options, callback){
   http
     .get(settings.url)
     .end(function(error, response){
-      callback(error, response.body.trustlines);
+      if (error) {
+        return callback(error);
+      }
+
+      if (response.body.success) {
+        callback(null, response.body.trustlines);
+      } else {
+        callback(response.body);
+      }
     });
 };
 
@@ -290,11 +372,6 @@ Client.prototype.sendAndConfirmPayment = function(opts, callback){
       self.pollPaymentStatus(payment, next);
     },
   ], callback);
-};
-
-Client.prototype._handleError = function(error, callback){
-  this.errors.push({ field: 'ripple_rest_client', message: error });
-  callback(error, null);
 };
 
 Client.RippleAPI = function(options) {
