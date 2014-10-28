@@ -130,7 +130,7 @@ Client.prototype.buildPayment = function(opts, callback){
 };
 
 Client.prototype.getNotification = function(hash, callback){
-  var url = this.api+'v1/accounts/'+this.account+'/notifications/'+hash+"?types=payment";
+  var url = this.api+'v1/accounts/'+this.account+'/notifications/'+hash;
 
   http
     .get(url)
