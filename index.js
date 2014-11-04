@@ -282,9 +282,9 @@ Client.prototype._getAndHandlePaymentStatus = function(statusUrl, callback, loop
     if (response && response.state === 'validated'){
       callback(null, response);
     } else {
-      setImmediate(function(){
+      setTimeout(function(){
         loopFunction(statusUrl, callback, loopFunction);
-      });
+      }, 100);
     }
   });
 };
