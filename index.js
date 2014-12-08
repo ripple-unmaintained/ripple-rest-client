@@ -112,8 +112,23 @@ Client.prototype.buildPayment = function(opts, callback){
     amount += ("+"+ opts.issuer);
   }
   var url = this.api+'v1/accounts/'+this.account+'/payments/paths/'+opts.recipient+'/'+amount;
+  var sourceCurrenciesParam = {};
+  // Source currencies comes in as an array, iterate through it and build a query string param to append to the url
+  if (opts.source_currencies && opts.source_currencies.length > 0) {
+    var sourceCurrenciesString = '';
+    var sourceCurrencies = opts.source_currencies;
+    for (var i = 0; i < sourceCurrencies.length; i++) {
+      sourceCurrenciesString = sourceCurrenciesString + sourceCurrencies[i];
+      if (i < sourceCurrencies.length-1) {
+        sourceCurrenciesString = sourceCurrenciesString + ',';
+      }
+    }
+    sourceCurrenciesParam.source_currencies = sourceCurrenciesString;
+  }
+
   http
     .get(url)
+    .query(sourceCurrenciesParam)
     .end(function(error, response){
 
       if (error) {
