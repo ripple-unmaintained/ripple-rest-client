@@ -16,7 +16,8 @@ describe('Ripple REST Client buildPayment', function() {
     var newPayment = {
       currency: 'XRP',
       amount: 0.05,
-      recipient: fixtures.ripple_address.destination_account
+      recipient: fixtures.ripple_address.destination_account,
+      source_currencies: ['USD','XRP']
     };
 
 
