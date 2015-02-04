@@ -279,7 +279,7 @@ Client.prototype.getPaymentStatus = function(statusUrl, callback){
       }
 
       if (response.body.success) {
-        callback(null, response.body.payment);
+        callback(null, response.body);
       } else {
         callback(response.body);
       }
@@ -294,8 +294,8 @@ Client.prototype._getAndHandlePaymentStatus = function(statusUrl, callback, loop
       callback(error, null);
       return loopFunction(statusUrl, callback, loopFunction);
     }
-    if (response && response.state === 'validated'){
-      callback(null, response);
+    if (response && (response.state === 'validated' || response.payment.state === 'validated')){
+      callback(null, response.payment);
     } else {
       setTimeout(function(){
         loopFunction(statusUrl, callback, loopFunction);
@@ -385,7 +385,7 @@ Client.prototype.sendAndConfirmPayment = function(opts, callback){
     },
     function(payment, next){
       self.pollPaymentStatus(payment, next);
-    },
+    }
   ], callback);
 };
 
@@ -397,6 +397,6 @@ Client.RippleAPI = function(options) {
     default:
       throw new Error('InvalidAdapter')
   }
-}
+};
 
 module.exports = Client;
