@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/stevenzeiler/ripple-rest-client.git"
+    "url": "https://github.com/ripple/ripple-rest-client.git"
   },
   "keywords": [
     "ripple",
@@ -19,7 +19,7 @@
   "author": "stevenzeiler",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/stevenzeiler/ripple-rest-client/issues"
+    "url": "https://github.com/ripple/ripple-rest-client/issues"
   },
   "dependencies": {
     "request": "2.x.x",
