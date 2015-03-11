@@ -2,9 +2,10 @@ const async = require('async');
 const uuid = require('node-uuid');
 const RippleRestV1 = require(__dirname+'/lib/clients/rest_v1.js');
 const http = require('superagent');
+const _ = require('lodash');
 
 var Client = function(options) {
-  this.api = options.api || 'http://localhost:5990/';
+  this.api = options.api || 'https://api.ripple.com/';
   this.account = options.account;
   this.secret = options.secret || '';
   this.lastPaymentHash = options.lastPaymentHash;
@@ -108,21 +109,17 @@ Client.prototype.getAccountBalance = function(callback){
 Client.prototype.buildPayment = function(opts, callback){
 
   var amount = opts.amount + "+" + opts.currency;
-  if (opts.issuer) {
-    amount += ("+"+ opts.issuer);
-  }
+  amount += !_.isEmpty(opts.to_issuer) ? '+' + opts.to_issuer : '';
+
   var url = this.api+'v1/accounts/'+this.account+'/payments/paths/'+opts.recipient+'/'+amount;
   var sourceCurrenciesParam = {};
-  // Source currencies comes in as an array, iterate through it and build a query string param to append to the url
+  var sourceCurrenciesString = '';
+
+  // Source currencies comes in as an array, build a query string param to append to the url
   if (opts.source_currencies && opts.source_currencies.length > 0) {
-    var sourceCurrenciesString = '';
-    var sourceCurrencies = opts.source_currencies;
-    for (var i = 0; i < sourceCurrencies.length; i++) {
-      sourceCurrenciesString = sourceCurrenciesString + sourceCurrencies[i];
-      if (i < sourceCurrencies.length-1) {
-        sourceCurrenciesString = sourceCurrenciesString + ',';
-      }
-    }
+    sourceCurrenciesString = opts.source_currencies.join(',');
+    //TODO: look into this encode/decode issue
+    sourceCurrenciesString += !_.isEmpty(opts.from_issuer) ? decodeURIComponent('%20') + opts.from_issuer : '';
     sourceCurrenciesParam.source_currencies = sourceCurrenciesString;
   }
 
