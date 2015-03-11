@@ -1,6 +1,6 @@
 {
   "name": "ripple-rest-client",
-  "version": "1.13.1",
+  "version": "1.13.2",
   "description": "A Node.js client library for interacting with Ripple REST servers.",
   "main": "./index.js",
   "scripts": {
@@ -22,13 +22,14 @@
     "url": "https://github.com/ripple/ripple-rest-client/issues"
   },
   "dependencies": {
-    "request": "2.x.x",
-    "node-uuid": "^1.4.1",
     "async": "^0.9.0",
-    "require-all-to-camel": "^1.0.0",
     "bluebird": "^2.3.4",
-    "superagent": "^0.19.1",
-    "require-all": "0.0.8"
+    "lodash": "^3.5.0",
+    "node-uuid": "^1.4.1",
+    "request": "2.x.x",
+    "require-all": "0.0.8",
+    "require-all-to-camel": "^1.0.0",
+    "superagent": "^0.19.1"
   },
   "devDependencies": {
     "mocha": "1.16.x",
