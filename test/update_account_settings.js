@@ -1,7 +1,7 @@
 'use strict';
 
 var Client = require('../');
-var assert = require('assert');
+var assert = require('chai').assert;
 var account_info = require('./fixtures/account_info')();
 var errorFixture = require('./fixtures/update_account_settings').error;
 var success = require('./fixtures/update_account_settings').success;
