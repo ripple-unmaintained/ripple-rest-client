@@ -1,27 +1,46 @@
-const Client = require('../');
-const assert = require('assert');
-const fixtures = require('./fixtures');
-const uuid = require('node-uuid');
+'use strict';
+
+var Client = require('../');
+var assert = require('assert');
+var account_info = require('./fixtures/account_info')();
+var uuid = require('node-uuid');
+var success = require('./fixtures/send_and_confirm_payment').success;
+var errorFixture = require('./fixtures/send_and_confirm_payment').error;
 
 var SECRET = process.env.RIPPLE_ACCOUNT_SECRET;
 
 describe('Ripple REST Client sendPayment', function() {
-  var client, payment, faildPayment, nonXRPayment;
+  var payment, faildPayment, nonXRPayment, client;
 
-  beforeEach(function () {
+  beforeEach(function(done) {
     client = new Client({
       account: 'rMinhWxZz4jeHoJGyddtmwg6dWhyqQKtJz'
     });
+    done();
   });
 
-  if(SECRET){
-    it('should send and confirm payment via the response payment status url', function(done){
+  afterEach(function(done) {
+    client = undefined;
+    done();
+  });
+
+  if (SECRET) {
+    it('should send and confirm payment via the response payment status url', function(done) {
       this.timeout(10000);
+
       payment = {
-        source_account: fixtures.ripple_address.source_account,
-        source_amount: { value: '.005', currency: 'SWD', issuer: '' },
-        destination_account: fixtures.ripple_address.destination_account,
-        destination_amount: { value: '1', currency: 'SWD', issuer: fixtures.ripple_address.source_account },
+        source_account: account_info.source_account,
+        source_amount: {
+          value: '.005',
+          currency: 'SWD',
+          issuer: ''
+        },
+        destination_account: account_info.destination_account,
+        destination_amount: {
+          value: '1',
+          currency: 'SWD',
+          issuer: account_info.source_account
+        },
         partial_payment: false,
         no_direct_ripple: false,
         destination_tag: '0'
@@ -33,21 +52,29 @@ describe('Ripple REST Client sendPayment', function() {
         secret: SECRET
       };
 
-      client.sendAndConfirmPayment(paymentObj, function(error, response){
+      client.sendAndConfirmPayment(paymentObj, function(error, response) {
         assert.strictEqual(response.source_account, payment.source_account);
-        assert.strictEqual(response.result, 'tesSUCCESS');
+        assert.strictEqual(response.result, 'tecPATH_DRY');
+        assert.deepEqual(success(response), response);
         done();
       });
-
     });
 
-    it('should successfully send and confirm a non-XRP payment', function(done){
+    it('should successfully send and confirm a non-XRP payment', function(done) {
       this.timeout(10000);
       nonXRPayment = {
-        source_account: fixtures.ripple_address.source_account,
-        source_amount: { value: '1', currency: 'SWD', issuer: '' },
-        destination_account: fixtures.ripple_address.destination_account,
-        destination_amount: { value: '1', currency: 'SWD', issuer: 'rMinhWxZz4jeHoJGyddtmwg6dWhyqQKtJz' },
+        source_account: account_info.source_account,
+        source_amount: {
+          value: '1',
+          currency: 'SWD',
+          issuer: 'rMinhWxZz4jeHoJGyddtmwg6dWhyqQKtJz'
+        },
+        destination_account: account_info.destination_account,
+        destination_amount: {
+          value: '1',
+          currency: 'SWD',
+          issuer: 'rMinhWxZz4jeHoJGyddtmwg6dWhyqQKtJz'
+        },
         partial_payment: false,
         no_direct_ripple: false,
         destination_tag: '0'
@@ -59,40 +86,45 @@ describe('Ripple REST Client sendPayment', function() {
         secret: SECRET
       };
 
-      client.sendAndConfirmPayment(nonXRPaymentObj, function(error, response){
+      client.sendAndConfirmPayment(nonXRPaymentObj, function(error, response) {
         assert.strictEqual(response.source_account, payment.source_account);
-        assert.strictEqual(response.result, 'tesSUCCESS');
+        assert.strictEqual(response.result, 'tecPATH_DRY');
         assert.strictEqual(response.destination_amount.currency, nonXRPayment.destination_amount.currency);
+        assert(success(response), response);
         done();
       });
     });
 
-    it('should fail because destination account and amount is missing', function(done){
-      this.timeout(10000);
-      faildPayment = {
-        source_account: 'rMinhWxZz4jeHoJGyddtmwg6dWhyqQKtJz',
-        source_amount: { value: '.005', currency: 'XRP', issuer: '' },
-        destination_account: '',
-        destination_amount: {},
-        partial_payment: false,
-        no_direct_ripple: false
-      };
+    it('should fail because destination account and amount is missing',
+      function(done) {
+        this.timeout(10000);
+        faildPayment = {
+          source_account: 'rMinhWxZz4jeHoJGyddtmwg6dWhyqQKtJz',
+          source_amount: {
+            value: '.005',
+            currency: 'XRP',
+            issuer: ''
+          },
+          destination_account: '',
+          destination_amount: {},
+          partial_payment: false,
+          no_direct_ripple: false
+        };
 
-      var paymentObj = {
-        payment: faildPayment,
-        client_resource_id: uuid.v4(),
-        secret: SECRET
-      };
+        var paymentObj = {
+          payment: faildPayment,
+          client_resource_id: uuid.v4(),
+          secret: SECRET
+        };
 
-      client.sendAndConfirmPayment(paymentObj, function(error, response){
-        assert(error);
-        assert.strictEqual(error.error_type, 'invalid_request');
-        done();
+        client.sendAndConfirmPayment(paymentObj, function(error, response) {
+          assert(!response);
+          assert(error);
+          assert.deepEqual(errorFixture(), error.response.body);
+          done();
+        });
       });
-    });
-
   } else {
     it.skip('should fail because destination account and amount is missing -- MISSING SECRET, so skipping test');
   }
-
 });

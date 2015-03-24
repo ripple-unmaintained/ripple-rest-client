@@ -1,0 +1,31 @@
+'use strict';
+
+var _ = require('lodash');
+
+exports.success = function(args) {
+  var fixture = {
+    success: true,
+    ledger: args.ledger,
+    validated: args.validated,
+    balances: []
+  };
+
+  _.forEach(args.balances, function(body) {
+    fixture.balances.push({
+      value: body.value,
+      currency: body.currency,
+      counterparty: body.counterparty
+    });
+  });
+
+  return fixture;
+};
+
+exports.error = function() {
+  return {
+    success: false,
+    error_type: 'invalid_request',
+    error: 'restINVALID_PARAMETER',
+    message: 'Parameter is not a valid Ripple address: account'
+  };
+};

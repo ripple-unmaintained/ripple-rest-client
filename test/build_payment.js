@@ -1,58 +1,57 @@
-const Client = require('../');
-const assert = require('assert');
-const fixtures = require('./fixtures');
+'use strict';
+
+var Client = require('../');
+var assert = require('assert');
+var account_info = require('./fixtures/account_info')();
+var _ = require('lodash');
+var success = require('./fixtures/build_payment').success;
+var errorFixture = require('./fixtures/build_payment').error;
 
 describe('Ripple REST Client buildPayment', function() {
   var client;
 
-  before(function () {
+  beforeEach(function(done) {
     client = new Client({
-      account: fixtures.ripple_address.source_account
+      account: account_info.source_account,
+      secret: account_info.secret,
+      from_issuer: account_info.source_account,
+      to_issuer: account_info.destination_account
     });
+    done();
   });
 
-  it('should successfully build payment', function(done){
+  afterEach(function(done) {
+    client = undefined;
+    done();
+  });
+
+  it('should successfully build payment', function(done) {
 
     var newPayment = {
       currency: 'GWD',
       amount: 10,
-      recipient: fixtures.ripple_address.destination_account,
-      source_currencies: ['GWD'],
-      from_issuer: fixtures.ripple_address.destination_account,
-      to_issuer: fixtures.ripple_address.destination_account
+      recipient: account_info.destination_account,
+      source_currencies: ['GWD', 'USD']
     };
 
-    client.buildPayment(newPayment, function(error, response){
-      assert(!error);
-      assert.deepEqual(fixtures.responses['1_4_0'].success.buildPayment, response);
+    client.buildPayment(newPayment, function(error, response) {
+      assert(!error, 'API call failed');
+      assert(response, 'Response is null');
+      assert(_.isArray(response.payments));
+      _.forEach(response.payments, function(value) {
+        var fixture = success(value);
+        assert.deepEqual(fixture, value);
+      });
       done();
     });
   });
 
-  it('should successfully build payment with multiple source currencies', function(done){
-
-    var newPayment = {
-      currency: 'GWD',
-      amount: 10,
-      recipient: fixtures.ripple_address.destination_account,
-      source_currencies: ['GWD', 'USD'],
-      from_issuer: fixtures.ripple_address.destination_account,
-      to_issuer: fixtures.ripple_address.destination_account
-    };
-
-    client.buildPayment(newPayment, function(error, response){
-      assert(!error);
-      assert.deepEqual(fixtures.responses['1_4_0'].success.buildPaymentMultipleSourceCurrencies, response);
-      done();
-    });
-
-  });
-
-  it('should fail due to an empty payment object', function(done){
+  it('should fail due to an empty payment object', function(done) {
     var newPayment = {};
-    client.buildPayment(newPayment, function(error, response){
+    client.buildPayment(newPayment, function(error, response) {
       assert(!response);
-      assert.deepEqual(fixtures.responses['1_4_0'].errors.invalid_request, error);
+      assert(error);
+      assert.deepEqual(errorFixture(), error.response.body);
       done();
     });
   });
