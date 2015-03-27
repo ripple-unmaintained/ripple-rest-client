@@ -1,7 +1,7 @@
 'use strict';
 
 exports.success = function(args) {
-  return {
+  var returnData = {
     success: true,
     api_documentation_url: 'https://github.com/ripple/ripple-rest',
     rippled_server_url: 'wss://s1.ripple.com:443',
@@ -29,4 +29,10 @@ exports.success = function(args) {
       validation_quorum: args.rippled_server_status.validation_quorum
     }
   };
+
+  if (args.rippled_server_status.fetch_pack) {
+    returnData.rippled_server_status.fetch_pack = args.rippled_server_status.fetch_pack;
+  }
+
+  return returnData;
 };

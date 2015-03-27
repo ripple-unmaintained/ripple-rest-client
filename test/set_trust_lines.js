@@ -1,7 +1,7 @@
 'use strict';
 
 var Client = require('../');
-var assert = require('assert');
+var assert = require('chai').assert;
 var account_info = require('./fixtures/account_info')();
 var errorFixture = require('./fixtures/set_trust_lines').error;
 var success = require('./fixtures/set_trust_lines').success;
@@ -56,7 +56,7 @@ describe('Ripple REST Client setTrustLines', function() {
     client.setTrustLines(trust, function(error, response) {
       assert(error);
       assert(!response);
-      assert(errorFixture(), error.response.body);
+      assert(errorFixture(), error.error);
       done();
     });
   });

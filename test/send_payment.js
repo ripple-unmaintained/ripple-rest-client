@@ -1,7 +1,7 @@
 'use strict';
 
 var Client = require('../');
-var assert = require('assert');
+var assert = require('chai').assert;
 var account_info = require('./fixtures/account_info')();
 var uuid = require('node-uuid');
 var success = require('./fixtures/send_payment').success;
@@ -92,7 +92,7 @@ describe('Ripple REST Client Send Payment', function() {
       client.sendPayment(paymentObj, function(error, response) {
         assert(error);
         assert(!response);
-        assert(errorFixture(), error.response.body);
+        assert(errorFixture(), error.error);
         done();
       });
     });

@@ -1,7 +1,7 @@
 'use strict';
 
 var Client = require('../');
-var assert = require('assert');
+var assert = require('chai').assert;
 
 describe('Ripple REST Client Get Transaction Fee', function() {
 

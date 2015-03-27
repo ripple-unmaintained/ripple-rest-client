@@ -23,9 +23,8 @@ exports.success = function(args) {
 
 exports.error = function() {
   return {
-    success: false,
-    error_type: 'invalid_request',
     error: 'restINVALID_PARAMETER',
+    error_type: 'invalid_request',
     message: 'Parameter is not a valid Ripple address: account'
   };
 };
