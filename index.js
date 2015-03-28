@@ -31,6 +31,7 @@ Client.prototype.ping = function(callback) {
   });
 };
 
+// Deprecated: not called in Ripple Connect
 Client.prototype.getTransactionFee = function(callback) {
   var url = this.api + 'v1/transaction-fee';
 
@@ -46,6 +47,7 @@ Client.prototype.getTransactionFee = function(callback) {
   });
 };
 
+// Deprecated: not called in Ripple Connect
 Client.prototype.generateUUID = function(callback) {
   var url = this.api + 'v1/uuid';
 
@@ -61,6 +63,7 @@ Client.prototype.generateUUID = function(callback) {
   });
 };
 
+// Deprecated: not called in Ripple Connect
 Client.prototype.generateNewWallet = function(callback) {
   var url = this.api + 'v1/wallet/new';
 
@@ -148,6 +151,7 @@ Client.prototype.buildPayment = function(opts, callback) {
   });
 };
 
+// Deprecated: not called in Ripple Connect
 Client.prototype.getNotification = function(hash, callback) {
   var url = this.api + 'v1/accounts/' + this.account + '/notifications/' + hash;
   var notification;
@@ -171,6 +175,7 @@ Client.prototype.getNotification = function(hash, callback) {
   });
 };
 
+// Deprecated: not called in Ripple Connect
 Client.prototype.setHash = function(paymentHash, callback) {
   this.lastPaymentHash = paymentHash;
 };
@@ -208,6 +213,7 @@ Client.prototype.getPayments = function(account, callback) {
   });
 };
 
+// Deprecated: not called in Ripple Connect
 Client.prototype.getTransaction = function(hash, callback) {
   var url = this.api + 'v1/transactions/' + hash;
 
@@ -223,6 +229,7 @@ Client.prototype.getTransaction = function(hash, callback) {
   });
 };
 
+// Deprecated: not called in Ripple Connect
 Client.prototype.getServerStatus = function(opts, callback) {
   var url = this.api + 'v1/server';
 
@@ -238,7 +245,7 @@ Client.prototype.getServerStatus = function(opts, callback) {
   });
 };
 
-
+// Deprecated: not called in Ripple Connect
 Client.prototype.updateAccountSettings = function(opts, callback) {
 
   var account = opts.account || this.account;
@@ -262,7 +269,7 @@ Client.prototype.updateAccountSettings = function(opts, callback) {
   });
 };
 
-
+// Deprecated: not called in Ripple Connect
 Client.prototype.getPaymentStatus = function(statusUrl, callback) {
   http
   .get(statusUrl)
@@ -325,6 +332,7 @@ Client.prototype.pollPaymentStatus = function(payment, callback) {
   }
 };
 
+// Deprecated: not called in Ripple Connect
 Client.prototype.setTrustLines = function(options, callback) {
   var account = options.account || this.account;
   var httpOptions = {
@@ -353,6 +361,7 @@ Client.prototype.setTrustLines = function(options, callback) {
 
 };
 
+// Deprecated: not called in Ripple Connect
 Client.prototype.getTrustLines = function(options, callback) {
   var account = options.fromAccount || this.account;
   var url = this.api + 'v1/accounts/' + account + '/trustlines';
@@ -383,6 +392,7 @@ Client.prototype.getTrustLines = function(options, callback) {
   });
 };
 
+// Deprecated: not called in Ripple Connect
 Client.prototype.sendAndConfirmPayment = function(opts, callback) {
   var self = this;
 
