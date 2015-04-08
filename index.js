@@ -304,7 +304,7 @@ Client.prototype._getAndHandlePaymentStatus =
 
     if (response &&
         (response.state === 'validated' || response.state === 'failed')) {
-      callback(null, response.payment);
+      callback(null, response);
     } else {
       setTimeout(function() {
         loopFunction(statusUrl, callback, loopFunction);
