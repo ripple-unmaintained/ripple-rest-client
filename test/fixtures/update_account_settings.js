@@ -19,6 +19,6 @@ exports.error = function() {
     success: false,
     error_type: 'invalid_request',
     error: 'restINVALID_PARAMETER',
-    message: 'Parameter missing: secret'
+    message: 'Parameter missing: settings'
   };
 };
