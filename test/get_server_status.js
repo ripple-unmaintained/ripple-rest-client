@@ -24,7 +24,7 @@ describe('Ripple REST Client Get Server Status', function() {
     client.getServerStatus(null, function(error, response) {
       assert(!error);
       assert(response);
-      assert.deepEqual(success(response), response);
+      assert.deepEqual(Object.keys(success(response)), Object.keys(response));
       done();
     });
   });

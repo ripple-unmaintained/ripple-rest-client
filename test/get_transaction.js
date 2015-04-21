@@ -17,6 +17,7 @@ describe('Ripple REST Client Get Transaction', function() {
 
     client.getPayments(null, function(error, payment_array) {
       payments = payment_array;
+      assert(payments[0], 'No payments');
       done();
     });
   });

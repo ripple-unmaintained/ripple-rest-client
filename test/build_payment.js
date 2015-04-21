@@ -35,7 +35,9 @@ describe('Ripple REST Client buildPayment', function() {
     };
 
     client.buildPayment(newPayment, function(error, response) {
-      assert(!error, 'API call failed');
+      if (error) {
+        return done(error);
+      }
       assert(response, 'Response is null');
       assert(_.isArray(response.payments));
       _.forEach(response.payments, function(value) {
