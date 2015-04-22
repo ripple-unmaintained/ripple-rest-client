@@ -175,6 +175,23 @@ Client.prototype.getNotification = function(hash, callback) {
   });
 };
 
+Client.prototype.getNotifications = function(callback) {
+  var url = this.api + 'v1/accounts/' + this.account + '/notifications/';
+  var notifications;
+
+  http
+    .get(url)
+    .end(function(error, response) {
+
+    if (error) {
+      callback(error);
+    } else {
+      notifications = response.body.notifications;
+      callback(null, notifications);
+    }
+  });
+};
+
 // Deprecated: not called in Ripple Connect
 Client.prototype.setHash = function(paymentHash, callback) {
   this.lastPaymentHash = paymentHash;
