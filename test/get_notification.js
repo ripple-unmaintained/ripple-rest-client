@@ -26,18 +26,6 @@ describe('Ripple REST Client Get Notification', function() {
     done();
   });
 
-  it('should get NO notification', function(done) {
-    client.getNotification(null, function(error, response) {
-      if (error) {
-        return done(error);
-      }
-      assert(!response, 'Response should be null');
-      assert(error);
-      assert.deepEqual(errorFixture(), error.response.body);
-      done();
-    });
-  });
-
   // Given the hash for the second last payment, the response should contain the
   // hashes of last payment and third last payment.
   it('should get a notification', function(done) {
