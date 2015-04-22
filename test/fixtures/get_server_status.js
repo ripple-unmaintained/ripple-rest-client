@@ -4,7 +4,7 @@ exports.success = function(args) {
   var returnData = {
     success: true,
     api_documentation_url: 'https://github.com/ripple/ripple-rest',
-    rippled_server_url: 'wss://s1.ripple.com:443',
+    rippled_server_url: 'wss://s2.ripple.com:443',
     rippled_server_status: {
       build_version: args.rippled_server_status.build_version,
       complete_ledgers: args.rippled_server_status.complete_ledgers,

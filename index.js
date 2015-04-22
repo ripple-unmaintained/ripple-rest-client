@@ -175,6 +175,23 @@ Client.prototype.getNotification = function(hash, callback) {
   });
 };
 
+Client.prototype.getNotifications = function(callback) {
+  var url = this.api + 'v1/accounts/' + this.account + '/notifications/';
+  var notifications;
+
+  http
+    .get(url)
+    .end(function(error, response) {
+
+    if (error) {
+      callback(error);
+    } else {
+      notifications = response.body.notifications;
+      callback(null, notifications);
+    }
+  });
+};
+
 // Deprecated: not called in Ripple Connect
 Client.prototype.setHash = function(paymentHash, callback) {
   this.lastPaymentHash = paymentHash;
@@ -304,7 +321,7 @@ Client.prototype._getAndHandlePaymentStatus =
 
     if (response &&
         (response.state === 'validated' || response.state === 'failed')) {
-      callback(null, response.payment);
+      callback(null, response);
     } else {
       setTimeout(function() {
         loopFunction(statusUrl, callback, loopFunction);

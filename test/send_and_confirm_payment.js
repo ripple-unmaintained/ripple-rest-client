@@ -31,14 +31,14 @@ describe('Ripple REST Client sendPayment', function() {
       payment = {
         source_account: account_info.source_account,
         source_amount: {
-          value: '.005',
-          currency: 'SWD',
+          value: '0.005',
+          currency: 'GWD',
           issuer: ''
         },
         destination_account: account_info.destination_account,
         destination_amount: {
-          value: '1',
-          currency: 'SWD',
+          value: '0.005',
+          currency: 'GWD',
           issuer: account_info.source_account
         },
         partial_payment: false,
@@ -53,44 +53,7 @@ describe('Ripple REST Client sendPayment', function() {
       };
 
       client.sendAndConfirmPayment(paymentObj, function(error, response) {
-        assert.strictEqual(response.source_account, payment.source_account);
-        assert.strictEqual(response.result, 'tecPATH_DRY');
         assert.deepEqual(success(response), response);
-        done();
-      });
-    });
-
-    it('should successfully send and confirm a non-XRP payment', function(done) {
-      this.timeout(10000);
-      nonXRPayment = {
-        source_account: account_info.source_account,
-        source_amount: {
-          value: '1',
-          currency: 'SWD',
-          issuer: 'rMinhWxZz4jeHoJGyddtmwg6dWhyqQKtJz'
-        },
-        destination_account: account_info.destination_account,
-        destination_amount: {
-          value: '1',
-          currency: 'SWD',
-          issuer: 'rMinhWxZz4jeHoJGyddtmwg6dWhyqQKtJz'
-        },
-        partial_payment: false,
-        no_direct_ripple: false,
-        destination_tag: '0'
-      };
-
-      var nonXRPaymentObj = {
-        payment: nonXRPayment,
-        client_resource_id: uuid.v4(),
-        secret: SECRET
-      };
-
-      client.sendAndConfirmPayment(nonXRPaymentObj, function(error, response) {
-        assert.strictEqual(response.source_account, payment.source_account);
-        assert.strictEqual(response.result, 'tecPATH_DRY');
-        assert.strictEqual(response.destination_amount.currency, nonXRPayment.destination_amount.currency);
-        assert(success(response), response);
         done();
       });
     });
