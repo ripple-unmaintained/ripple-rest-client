@@ -25,16 +25,7 @@ exports.success = function(args) {
       hash: args.transaction.hash,
       inLedger: args.transaction.inLedger,
       ledger_index: args.transaction.ledger_index,
-      meta: {
-        TransactionIndex: args.transaction.meta.TransactionIndex,
-        AffectedNodes: [],
-        TransactionResult: args.transaction.meta.TransactionResult,
-        delivered_amount: {
-          value: args.transaction.meta.delivered_amount.value,
-          currency: args.transaction.meta.delivered_amount.currency,
-          issuer: args.transaction.meta.delivered_amount.issuer
-        }
-      },
+      meta: args.transaction.meta,
       validated: args.transaction.validated
     }
   };
