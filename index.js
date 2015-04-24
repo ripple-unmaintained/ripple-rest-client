@@ -151,10 +151,8 @@ Client.prototype.buildPayment = function(opts, callback) {
   });
 };
 
-// Deprecated: not called in Ripple Connect
 Client.prototype.getNotification = function(hash, callback) {
   var url = this.api + 'v1/accounts/' + this.account + '/notifications/' + hash;
-  var notification;
 
   http
     .get(url)
@@ -163,14 +161,9 @@ Client.prototype.getNotification = function(hash, callback) {
     if (error) {
       callback(error);
     } else {
-      notification = response.body.notification;
-
-      if (notification && notification.next_hash) {
-        notification.next_notification_hash = notification.next_hash;
-        callback(null, notification);
-      } else {
-        callback(null, null);
-      }
+      response.body.notification.next_notification_hash =
+        response.body.notification.next_hash;
+      callback(null, response.body.notification);
     }
   });
 };
