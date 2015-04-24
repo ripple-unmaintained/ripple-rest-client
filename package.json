@@ -1,6 +1,6 @@
 {
   "name": "ripple-rest-client",
-  "version": "1.16.0",
+  "version": "1.16.1",
   "description": "A Node.js client library for interacting with Ripple REST servers.",
   "main": "./index.js",
   "scripts": {
