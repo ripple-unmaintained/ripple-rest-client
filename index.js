@@ -201,7 +201,12 @@ Client.prototype.getPayment = function(hash, callback) {
       return callback(error);
     }
 
-    callback(null, response.body.payment);
+    var payment = response.body.payment;
+    payment.hash = response.body.hash;
+    payment.client_resource_id = response.body.client_resource_id;
+    payment.ledger = response.body.ledger;
+
+    callback(null, payment);
   });
 };
 
