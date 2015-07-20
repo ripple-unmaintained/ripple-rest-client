@@ -1,4 +1,6 @@
-[![Build Status](https://travis-ci.org/ripple/ripple-rest-client.svg)](https://travis-ci.org/ripple/ripple-rest-client)
+# DEPRECATED
+
+This project is being deprecated in favor of using [ripple-lib](github.com/ripple/ripple-lib). Forthcoming additions to ripple-lib will provide a high-level, documented API. For example, see https://github.com/ripple/ripple-lib/tree/develop/src/api.
 
 ## Ripple REST Node.js Client Library
 
